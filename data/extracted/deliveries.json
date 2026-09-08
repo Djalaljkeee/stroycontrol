@@ -1,0 +1,1188 @@
+{
+ "dates": [
+  "2026-06-17",
+  "2026-06-18",
+  "2026-06-19",
+  "2026-06-20",
+  "2026-06-21",
+  "2026-06-22",
+  "2026-06-23",
+  "2026-06-24",
+  "2026-06-25",
+  "2026-06-26",
+  "2026-06-27",
+  "2026-06-28",
+  "2026-06-29",
+  "2026-06-30",
+  "2026-07-01",
+  "2026-07-02",
+  "2026-07-03",
+  "2026-07-04",
+  "2026-07-05",
+  "2026-07-06",
+  "2026-07-07",
+  "2026-07-08",
+  "2026-07-09",
+  "2026-07-10",
+  "2026-07-11",
+  "2026-07-12",
+  "2026-07-13",
+  "2026-07-14",
+  "2026-07-15",
+  "2026-07-16",
+  "2026-07-17",
+  "2026-07-18",
+  "2026-07-19",
+  "2026-07-20",
+  "2026-07-21",
+  "2026-07-22",
+  "2026-07-23",
+  "2026-07-24",
+  "2026-07-25",
+  "2026-07-26",
+  "2026-07-27",
+  "2026-07-28",
+  "2026-07-29",
+  "2026-07-30",
+  "2026-07-31",
+  "2026-08-01",
+  "2026-08-02",
+  "2026-08-03",
+  "2026-08-04",
+  "2026-08-05",
+  "2026-08-06",
+  "2026-08-07",
+  "2026-08-08",
+  "2026-08-09",
+  "2026-08-10",
+  "2026-08-11",
+  "2026-08-12",
+  "2026-08-13",
+  "2026-08-14",
+  "2026-08-15",
+  "2026-08-16",
+  "2026-08-17",
+  "2026-08-18",
+  "2026-08-19",
+  "2026-08-20",
+  "2026-08-21",
+  "2026-08-22",
+  "2026-08-23",
+  "2026-08-24",
+  "2026-08-25",
+  "2026-08-26",
+  "2026-08-27",
+  "2026-08-28",
+  "2026-08-29",
+  "2026-08-30",
+  "2026-08-31",
+  "2026-09-01",
+  "2026-09-02",
+  "2026-09-03",
+  "2026-09-04",
+  "2026-09-05",
+  "2026-09-06",
+  "2026-09-07",
+  "2026-09-08",
+  "2026-09-09",
+  "2026-09-10",
+  "2026-09-11",
+  "2026-09-12",
+  "2026-09-13",
+  "2026-09-14",
+  "2026-09-15",
+  "2026-09-16",
+  "2026-09-17",
+  "2026-09-18",
+  "2026-09-19",
+  "2026-09-20",
+  "2026-09-21",
+  "2026-09-22",
+  "2026-09-23",
+  "2026-09-24",
+  "2026-09-25",
+  "2026-09-26",
+  "2026-09-27",
+  "2026-09-28",
+  "2026-09-29",
+  "2026-09-30",
+  "2026-10-01",
+  "2026-10-02",
+  "2026-10-03",
+  "2026-10-04",
+  "2026-10-05",
+  "2026-10-06",
+  "2026-10-07",
+  "2026-10-08",
+  "2026-10-09",
+  "2026-10-10",
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18",
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23",
+  "2026-10-24",
+  "2026-10-25",
+  "2026-10-26",
+  "2026-10-27",
+  "2026-10-28",
+  "2026-10-29",
+  "2026-10-30",
+  "2026-10-31",
+  "2026-11-01",
+  "2026-11-02",
+  "2026-11-03",
+  "2026-11-04",
+  "2026-11-05",
+  "2026-11-06",
+  "2026-11-07",
+  "2026-11-08",
+  "2026-11-09",
+  "2026-11-10",
+  "2026-11-11",
+  "2026-11-12",
+  "2026-11-13",
+  "2026-11-14",
+  "2026-11-15",
+  "2026-11-16",
+  "2026-11-17",
+  "2026-11-18",
+  "2026-11-19",
+  "2026-11-20",
+  "2026-11-21",
+  "2026-11-22",
+  "2026-11-23",
+  "2026-11-24",
+  "2026-11-25",
+  "2026-11-26",
+  "2026-11-27",
+  "2026-11-28",
+  "2026-11-29",
+  "2026-11-30",
+  "2026-12-01",
+  "2026-12-02",
+  "2026-12-03",
+  "2026-12-04",
+  "2026-12-05",
+  "2026-12-06",
+  "2026-12-07",
+  "2026-12-08",
+  "2026-12-09",
+  "2026-12-10",
+  "2026-12-11",
+  "2026-12-12",
+  "2026-12-13",
+  "2026-12-14",
+  "2026-12-15",
+  "2026-12-16",
+  "2026-12-17",
+  "2026-12-18",
+  "2026-12-19",
+  "2026-12-20",
+  "2026-12-21",
+  "2026-12-22",
+  "2026-12-23",
+  "2026-12-24",
+  "2026-12-25",
+  "2026-12-26",
+  "2026-12-27",
+  "2026-12-28",
+  "2026-12-29",
+  "2026-12-30",
+  "2026-12-31",
+  "2027-01-01",
+  "2027-01-02",
+  "2027-01-03",
+  "2027-01-04",
+  "2027-01-05",
+  "2027-01-06",
+  "2027-01-07",
+  "2027-01-08",
+  "2027-01-09",
+  "2027-01-10",
+  "2027-01-11",
+  "2027-01-12",
+  "2027-01-13",
+  "2027-01-14",
+  "2027-01-15",
+  "2027-01-16",
+  "2027-01-17",
+  "2027-01-18",
+  "2027-01-19",
+  "2027-01-20",
+  "2027-01-21",
+  "2027-01-22",
+  "2027-01-23",
+  "2027-01-24",
+  "2027-01-25",
+  "2027-01-26",
+  "2027-01-27",
+  "2027-01-28",
+  "2027-01-29",
+  "2027-01-30",
+  "2027-01-31",
+  "2027-02-01",
+  "2027-02-02",
+  "2027-02-03",
+  "2027-02-04",
+  "2027-02-05",
+  "2027-02-06",
+  "2027-02-07",
+  "2027-02-08",
+  "2027-02-09",
+  "2027-02-10",
+  "2027-02-11",
+  "2027-02-12",
+  "2027-02-13",
+  "2027-02-14",
+  "2027-02-15"
+ ],
+ "rows": [
+  {
+   "row": 1,
+   "name": "Бетон В30",
+   "estimate": 7661.4,
+   "project": 2440.61,
+   "diffEstimateProject": 5220.789999999999,
+   "diffProjectIncoming": null,
+   "incoming": 2385.5,
+   "remainder": 5275.9,
+   "daily": [
+    {
+     "date": "2026-07-25",
+     "quantity": 601.0
+    },
+    {
+     "date": "2026-07-30",
+     "quantity": 479.0
+    },
+    {
+     "date": "2026-08-01",
+     "quantity": 27.5
+    },
+    {
+     "date": "2026-08-03",
+     "quantity": 13.5
+    },
+    {
+     "date": "2026-08-04",
+     "quantity": 2.7
+    },
+    {
+     "date": "2026-08-05",
+     "quantity": 39.5
+    },
+    {
+     "date": "2026-08-07",
+     "quantity": 30.2
+    },
+    {
+     "date": "2026-08-08",
+     "quantity": 12.0
+    },
+    {
+     "date": "2026-08-10",
+     "quantity": 3.6
+    },
+    {
+     "date": "2026-08-11",
+     "quantity": 30.0
+    },
+    {
+     "date": "2026-08-12",
+     "quantity": 1.5
+    },
+    {
+     "date": "2026-08-14",
+     "quantity": 26.5
+    },
+    {
+     "date": "2026-08-16",
+     "quantity": 172.0
+    },
+    {
+     "date": "2026-08-19",
+     "quantity": 19.0
+    },
+    {
+     "date": "2026-08-20",
+     "quantity": 327.5
+    },
+    {
+     "date": "2026-08-22",
+     "quantity": 34.0
+    },
+    {
+     "date": "2026-08-23",
+     "quantity": 3.5
+    },
+    {
+     "date": "2026-08-31",
+     "quantity": 380.0
+    },
+    {
+     "date": "2026-09-02",
+     "quantity": 136.5
+    },
+    {
+     "date": "2026-09-06",
+     "quantity": 3.0
+    },
+    {
+     "date": "2026-09-08",
+     "quantity": 43.0
+    }
+   ]
+  },
+  {
+   "row": 2,
+   "name": "Бетон В7,5",
+   "estimate": 242.2,
+   "project": 207.5,
+   "diffEstimateProject": 34.69999999999999,
+   "diffProjectIncoming": -67.5,
+   "incoming": 275.0,
+   "remainder": -32.80000000000001,
+   "daily": [
+    {
+     "date": "2026-06-30",
+     "quantity": 60.0
+    },
+    {
+     "date": "2026-07-03",
+     "quantity": 40.5
+    },
+    {
+     "date": "2026-07-06",
+     "quantity": 36.5
+    },
+    {
+     "date": "2026-07-11",
+     "quantity": 48.0
+    },
+    {
+     "date": "2026-07-15",
+     "quantity": 18.0
+    },
+    {
+     "date": "2026-07-16",
+     "quantity": 3.5
+    },
+    {
+     "date": "2026-07-17",
+     "quantity": 4.0
+    },
+    {
+     "date": "2026-07-18",
+     "quantity": 2.0
+    },
+    {
+     "date": "2026-07-21",
+     "quantity": 6.5
+    },
+    {
+     "date": "2026-08-09",
+     "quantity": 15.0
+    },
+    {
+     "date": "2026-08-11",
+     "quantity": 29.5
+    },
+    {
+     "date": "2026-08-12",
+     "quantity": 11.5
+    }
+   ]
+  },
+  {
+   "row": 3,
+   "name": "Бетон В15 (М3)",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 2.0
+    }
+   ]
+  },
+  {
+   "row": 4,
+   "name": "Бетон В25 (М3)",
+   "estimate": 2120.7000000000003,
+   "project": 369.72,
+   "diffEstimateProject": 1750.9800000000002,
+   "diffProjectIncoming": null,
+   "incoming": 102.0,
+   "remainder": 2018.7000000000003,
+   "daily": [
+    {
+     "date": "2026-07-25",
+     "quantity": 102.0
+    }
+   ]
+  },
+  {
+   "row": 5,
+   "name": "Раствор М 100 (м3)",
+   "estimate": 73.433,
+   "project": 83.0,
+   "diffEstimateProject": -9.566999999999993,
+   "diffProjectIncoming": -8.5,
+   "incoming": 91.5,
+   "remainder": -18.066999999999993,
+   "daily": [
+    {
+     "date": "2026-07-10",
+     "quantity": 17.0
+    },
+    {
+     "date": "2026-07-11",
+     "quantity": 15.0
+    },
+    {
+     "date": "2026-07-14",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-07-18",
+     "quantity": 6.0
+    },
+    {
+     "date": "2026-07-19",
+     "quantity": 4.5
+    },
+    {
+     "date": "2026-07-21",
+     "quantity": 8.5
+    },
+    {
+     "date": "2026-07-23",
+     "quantity": 6.5
+    },
+    {
+     "date": "2026-07-24",
+     "quantity": 1.0
+    },
+    {
+     "date": "2026-08-10",
+     "quantity": 4.0
+    },
+    {
+     "date": "2026-08-13",
+     "quantity": 11.0
+    },
+    {
+     "date": "2026-08-14",
+     "quantity": 7.5
+    },
+    {
+     "date": "2026-08-27",
+     "quantity": 0.5
+    }
+   ]
+  },
+  {
+   "row": 6,
+   "name": "Техноэласт ФИКС",
+   "estimate": null,
+   "project": 2075.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": -285.0,
+   "incoming": 2360.0,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 7,
+   "name": "Техноэласт ЭПП (м2)",
+   "estimate": 13442.35,
+   "project": 3085.0,
+   "diffEstimateProject": 10357.35,
+   "diffProjectIncoming": -875.0,
+   "incoming": 3960.0,
+   "remainder": 9482.35,
+   "daily": [
+    {
+     "date": "2026-07-06",
+     "quantity": 1220.0
+    },
+    {
+     "date": "2026-07-17",
+     "quantity": 1140.0
+    },
+    {
+     "date": "2026-08-13",
+     "quantity": 1600.0
+    }
+   ]
+  },
+  {
+   "row": 8,
+   "name": "XPS Carbon 100мм-м3",
+   "estimate": 73.2,
+   "project": 101.0,
+   "diffEstimateProject": -27.799999999999997,
+   "diffProjectIncoming": 28.730000000000004,
+   "incoming": 72.27,
+   "remainder": 0.9300000000000068,
+   "daily": [
+    {
+     "date": "2026-08-14",
+     "quantity": 72.27
+    }
+   ]
+  },
+  {
+   "row": 9,
+   "name": "Праймер битумный (Л)",
+   "estimate": 584.45,
+   "project": null,
+   "diffEstimateProject": 584.45,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 584.45,
+   "daily": []
+  },
+  {
+   "row": 10,
+   "name": "Арматура (Тн)",
+   "estimate": 1226.9,
+   "project": null,
+   "diffEstimateProject": 1226.9,
+   "diffProjectIncoming": null,
+   "incoming": 384.91,
+   "remainder": 841.99,
+   "daily": []
+  },
+  {
+   "row": 11,
+   "name": "Проволока",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 1.015
+    },
+    {
+     "date": "2026-07-18",
+     "quantity": 1.01
+    }
+   ]
+  },
+  {
+   "row": 12,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 3.541,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 4.0,
+   "remainder": -0.4590000000000001,
+   "daily": [
+    {
+     "date": "2026-07-28",
+     "quantity": 2.1
+    },
+    {
+     "date": "2026-09-05",
+     "quantity": 1.9
+    }
+   ]
+  },
+  {
+   "row": 13,
+   "name": "8-А500",
+   "estimate": null,
+   "project": 0.244,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.244,
+   "daily": []
+  },
+  {
+   "row": 14,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 2.81,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 1.9,
+   "remainder": 0.9100000000000001,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 1.9
+    }
+   ]
+  },
+  {
+   "row": 15,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 29.04,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 31.788,
+   "remainder": -2.748000000000001,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 8.798
+    },
+    {
+     "date": "2026-07-28",
+     "quantity": 11.37
+    },
+    {
+     "date": "2026-08-24",
+     "quantity": 1.225
+    },
+    {
+     "date": "2026-09-05",
+     "quantity": 10.395
+    }
+   ]
+  },
+  {
+   "row": 16,
+   "name": "12-А240",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.0,
+   "daily": []
+  },
+  {
+   "row": 17,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 174.077,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 189.088,
+   "remainder": -15.010999999999996,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 38.798
+    },
+    {
+     "date": "2026-07-15",
+     "quantity": 19.99
+    },
+    {
+     "date": "2026-07-16",
+     "quantity": 20.98
+    },
+    {
+     "date": "2026-07-18",
+     "quantity": 0.605
+    },
+    {
+     "date": "2026-07-28",
+     "quantity": 19.44
+    },
+    {
+     "date": "2026-08-24",
+     "quantity": 15.51
+    },
+    {
+     "date": "2026-08-25",
+     "quantity": 19.98
+    },
+    {
+     "date": "2026-08-26",
+     "quantity": 19.975
+    },
+    {
+     "date": "2026-08-28",
+     "quantity": 19.98
+    },
+    {
+     "date": "2026-09-05",
+     "quantity": 13.83
+    }
+   ]
+  },
+  {
+   "row": 18,
+   "name": "14-А240",
+   "estimate": null,
+   "project": 2.14,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 2.14,
+   "daily": []
+  },
+  {
+   "row": 19,
+   "name": "14-А500",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 2.335,
+   "remainder": -2.335,
+   "daily": [
+    {
+     "date": "2026-07-18",
+     "quantity": 2.335
+    }
+   ]
+  },
+  {
+   "row": 20,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 3.935,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 4.575,
+   "remainder": -0.6400000000000001,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 0.61
+    },
+    {
+     "date": "2026-07-28",
+     "quantity": 0.65
+    },
+    {
+     "date": "2026-08-24",
+     "quantity": 1.68
+    },
+    {
+     "date": "2026-09-05",
+     "quantity": 1.635
+    }
+   ]
+  },
+  {
+   "row": 21,
+   "name": "18-А500",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.0,
+   "daily": []
+  },
+  {
+   "row": 22,
+   "name": "20-А500",
+   "estimate": null,
+   "project": 7.886,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 7.97,
+   "remainder": -0.08399999999999963,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 7.97
+    }
+   ]
+  },
+  {
+   "row": 23,
+   "name": "22-А500",
+   "estimate": null,
+   "project": 0.1,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.14,
+   "remainder": -0.04000000000000001,
+   "daily": [
+    {
+     "date": "2026-07-28",
+     "quantity": 0.14
+    }
+   ]
+  },
+  {
+   "row": 24,
+   "name": "25-А500",
+   "estimate": null,
+   "project": 87.566,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 91.569,
+   "remainder": -4.003,
+   "daily": [
+    {
+     "date": "2026-07-11",
+     "quantity": 20.304
+    },
+    {
+     "date": "2026-07-14",
+     "quantity": 19.63
+    },
+    {
+     "date": "2026-07-15",
+     "quantity": 39.87
+    },
+    {
+     "date": "2026-07-18",
+     "quantity": 11.765
+    }
+   ]
+  },
+  {
+   "row": 25,
+   "name": "28-А500",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.0,
+   "daily": []
+  },
+  {
+   "row": 26,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 46.533,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 51.545,
+   "remainder": -5.0120000000000005,
+   "daily": [
+    {
+     "date": "2026-07-18",
+     "quantity": 6.355
+    },
+    {
+     "date": "2026-07-28",
+     "quantity": 17.96
+    },
+    {
+     "date": "2026-09-05",
+     "quantity": 27.229999999999997
+    }
+   ]
+  },
+  {
+   "row": 27,
+   "name": "36-А500",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.0,
+   "daily": []
+  },
+  {
+   "row": 28,
+   "name": "Анкерные крепления БК",
+   "estimate": 1.0,
+   "project": null,
+   "diffEstimateProject": 1.0,
+   "diffProjectIncoming": null,
+   "incoming": 1.0,
+   "remainder": 0.0,
+   "daily": [
+    {
+     "date": "2026-07-15",
+     "quantity": 1.0
+    }
+   ]
+  },
+  {
+   "row": 29,
+   "name": "Сетчатое ограждение (Шт.)",
+   "estimate": 62.012,
+   "project": null,
+   "diffEstimateProject": 62.012,
+   "diffProjectIncoming": null,
+   "incoming": 62.0,
+   "remainder": 0.012000000000000455,
+   "daily": [
+    {
+     "date": "2026-06-18",
+     "quantity": 62.0
+    }
+   ]
+  },
+  {
+   "row": 30,
+   "name": "Газобетонный блок D500 (м3)",
+   "estimate": 8.0,
+   "project": null,
+   "diffEstimateProject": 8.0,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 8.0,
+   "daily": []
+  },
+  {
+   "row": 31,
+   "name": "Пункт мойки колес",
+   "estimate": 1.0,
+   "project": null,
+   "diffEstimateProject": 1.0,
+   "diffProjectIncoming": null,
+   "incoming": 1.0,
+   "remainder": 0.0,
+   "daily": [
+    {
+     "date": "2026-06-20",
+     "quantity": 1.0
+    }
+   ]
+  },
+  {
+   "row": 32,
+   "name": "Щебень отсев (м3)",
+   "estimate": 39.0,
+   "project": null,
+   "diffEstimateProject": 39.0,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 39.0,
+   "daily": []
+  },
+  {
+   "row": 33,
+   "name": "Щебень 20-40",
+   "estimate": 577.8,
+   "project": null,
+   "diffEstimateProject": 577.8,
+   "diffProjectIncoming": null,
+   "incoming": 20.0,
+   "remainder": 557.8,
+   "daily": [
+    {
+     "date": "2026-07-18",
+     "quantity": 20.0
+    }
+   ]
+  },
+  {
+   "row": 34,
+   "name": "Песок",
+   "estimate": 6227.0,
+   "project": null,
+   "diffEstimateProject": 6227.0,
+   "diffProjectIncoming": null,
+   "incoming": 202.10000000000002,
+   "remainder": 6024.9,
+   "daily": [
+    {
+     "date": "2026-08-26",
+     "quantity": 51.5
+    },
+    {
+     "date": "2026-08-28",
+     "quantity": 25.8
+    },
+    {
+     "date": "2026-08-29",
+     "quantity": 50.0
+    },
+    {
+     "date": "2026-08-30",
+     "quantity": 25.1
+    },
+    {
+     "date": "2026-09-01",
+     "quantity": 49.7
+    }
+   ]
+  },
+  {
+   "row": 35,
+   "name": "Геотекстиль 200 (м2)",
+   "estimate": 2559.0,
+   "project": null,
+   "diffEstimateProject": 2559.0,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 2559.0,
+   "daily": []
+  },
+  {
+   "row": 36,
+   "name": "ПАГ14",
+   "estimate": 26.0,
+   "project": null,
+   "diffEstimateProject": 26.0,
+   "diffProjectIncoming": null,
+   "incoming": 26.0,
+   "remainder": 0.0,
+   "daily": [
+    {
+     "date": "2026-06-20",
+     "quantity": 26.0
+    }
+   ]
+  },
+  {
+   "row": 37,
+   "name": "Пеноплекс ГЕО Т-15 толщ.100 мм (м3)",
+   "estimate": 73.2,
+   "project": null,
+   "diffEstimateProject": 73.2,
+   "diffProjectIncoming": null,
+   "incoming": 73.9,
+   "remainder": -0.7000000000000028,
+   "daily": [
+    {
+     "date": "2026-08-14",
+     "quantity": 73.9
+    }
+   ]
+  },
+  {
+   "row": 38,
+   "name": "Мембрана Плантер Стандарт",
+   "estimate": 767.0,
+   "project": null,
+   "diffEstimateProject": 767.0,
+   "diffProjectIncoming": null,
+   "incoming": 780.0,
+   "remainder": -13.0,
+   "daily": [
+    {
+     "date": "2026-08-14",
+     "quantity": 780.0
+    }
+   ]
+  },
+  {
+   "row": 39,
+   "name": "Закладные детали (Тн)",
+   "estimate": 0.1,
+   "project": null,
+   "diffEstimateProject": 0.1,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 0.1,
+   "daily": []
+  },
+  {
+   "row": 40,
+   "name": "Металлоконструкции (Тн)",
+   "estimate": 60.51,
+   "project": null,
+   "diffEstimateProject": 60.51,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 60.51,
+   "daily": []
+  },
+  {
+   "row": 41,
+   "name": "Сэндвич-панели 150мм (м2)",
+   "estimate": 7564.0,
+   "project": null,
+   "diffEstimateProject": 7564.0,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 7564.0,
+   "daily": []
+  },
+  {
+   "row": 42,
+   "name": "Фасонка на сэндвич",
+   "estimate": 1891.0,
+   "project": null,
+   "diffEstimateProject": 1891.0,
+   "diffProjectIncoming": null,
+   "incoming": 0.0,
+   "remainder": 1891.0,
+   "daily": []
+  },
+  {
+   "row": 46,
+   "name": "Опалубка новая",
+   "estimate": null,
+   "project": null,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 47,
+   "name": "Щит 3000*850",
+   "estimate": null,
+   "project": 24.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 48,
+   "name": "Щит 3000*200",
+   "estimate": null,
+   "project": 2.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 49,
+   "name": "Щит 3000*1200",
+   "estimate": null,
+   "project": 240.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 50,
+   "name": "Щит 3000*1000",
+   "estimate": null,
+   "project": 20.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  },
+  {
+   "row": 51,
+   "name": "Щит 3000*550",
+   "estimate": null,
+   "project": 41.0,
+   "diffEstimateProject": null,
+   "diffProjectIncoming": null,
+   "incoming": null,
+   "remainder": null,
+   "daily": []
+  }
+ ]
+}

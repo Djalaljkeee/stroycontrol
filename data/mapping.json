@@ -1,0 +1,526 @@
+{
+  "_comment": [
+    "Соответствие строк КС-6а конструктивам и материалам.",
+    "",
+    "Файл заполняется вручную и проверяется сметчиком, потому что связь между",
+    "строками нельзя вывести автоматически: строка 'Поставка бетона В30 (плита ЛПК)'",
+    "покрывает сразу две строки работ — 'основная плита ЛПК' (1580 м3) и",
+    "'фундаменты ЛК и ЛШ' (73 м3), а у 'Устройство бетонной стяжки' единица м2,",
+    "и конструктивный объём приходится выводить из объёма закупки через коэффициент.",
+    "",
+    "workCodes    — строки работ, дающие конструктивный объём (суммируются);",
+    "supply       — строки поставки, дающие объём закупки и договорную цену.",
+    "Коды берутся из колонки '№ по смете' и указываются ровно как в файле, с точкой.",
+    "",
+    "workCodesResource / estimate — те же конструктивы в нумерации ресурсной сметы",
+    "(она своя: плита ЛПК это 1.3.1.x, а не 3.1.x). Смета берётся именно оттуда,",
+    "а не из первой редакции КС-6а: объёмы там уже отличаются (фундамент БК —",
+    "80,1 м3 бетона по смете против 100,4 по ДС).",
+    "materialByRevision — класс бетона, под которым конструктив проходил в конкретной",
+    "редакции. Плита ЛПК: В25 в смете и в редакции 31.07.2026, В30 в ДС3."
+  ],
+  "object": {
+    "code": "ЛПК",
+    "name": "Лабораторно-производственный корпус",
+    "kind": "object"
+  },
+  "sections": [
+    {
+      "code": "1.1",
+      "name": "Фундамент башенного крана",
+      "parent": "ЛПК"
+    },
+    {
+      "code": "3.1",
+      "name": "Фундаментная плита ЛПК",
+      "parent": "ЛПК"
+    },
+    {
+      "code": "3.2",
+      "name": "Несущие монолитные конструкции ЛПК",
+      "parent": "ЛПК"
+    },
+    {
+      "code": "3.3",
+      "name": "Монолитные приямки",
+      "parent": "ЛПК"
+    },
+    {
+      "code": "4.2",
+      "name": "Кровля ЛПК",
+      "parent": "ЛПК"
+    }
+  ],
+  "structures": [
+    {
+      "code": "1.1-prep",
+      "parent": "1.1",
+      "name": "Бетонная подготовка фундамента БК",
+      "kind": "prep",
+      "workCodes": [
+        "1.1.6."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B7_5",
+          "code": "1.1.7.",
+          "estimate": {
+            "material": "CONCRETE_B7_5",
+            "code": "1.1.1.7."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.1.1.6."
+      ]
+    },
+    {
+      "code": "1.1-slab",
+      "parent": "1.1",
+      "name": "Фундаментная плита БК",
+      "kind": "slab",
+      "workCodes": [
+        "1.1.8."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B25",
+          "code": "1.1.9.",
+          "estimate": {
+            "material": "CONCRETE_B25",
+            "code": "1.1.1.9."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "1.1.10.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.1.1.10."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.1.1.8."
+      ]
+    },
+    {
+      "code": "3.1-prep",
+      "parent": "3.1",
+      "name": "Бетонная подготовка основания плиты ЛПК",
+      "kind": "prep",
+      "workCodes": [
+        "3.1.8."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B7_5",
+          "code": "3.1.9.",
+          "estimate": {
+            "material": "CONCRETE_B7_5",
+            "code": "1.3.1.9."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.1.8."
+      ]
+    },
+    {
+      "code": "3.1-slab",
+      "parent": "3.1",
+      "name": "Плита ЛПК (основная + фундаменты ЛК и ЛШ)",
+      "kind": "slab",
+      "workCodes": [
+        "3.1.11.",
+        "3.1.12."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B30",
+          "code": "3.1.13.",
+          "materialByRevision": {
+            "ДС2": "CONCRETE_B25"
+          },
+          "estimate": {
+            "material": "CONCRETE_B25",
+            "code": "1.3.1.13."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.1.14.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.1.14."
+          }
+        }
+      ],
+      "note": "В редакции от 31.07.2026 бетон плиты проходил как В25, в ДС3 — как В30.",
+      "workCodesResource": [
+        "1.3.1.11.",
+        "1.3.1.12."
+      ]
+    },
+    {
+      "code": "3.2-columns",
+      "parent": "3.2",
+      "name": "Колонны ЛПК",
+      "kind": "columns",
+      "workCodes": [
+        "3.2.1."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B30",
+          "code": "3.2.2.",
+          "estimate": {
+            "material": "CONCRETE_B30",
+            "code": "1.3.2.2."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.2.3.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.2.3."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.2.1."
+      ]
+    },
+    {
+      "code": "3.2-floors",
+      "parent": "3.2",
+      "name": "Перекрытия ЛПК",
+      "kind": "floor",
+      "workCodes": [
+        "3.2.4."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B30",
+          "code": "3.2.5.",
+          "estimate": {
+            "material": "CONCRETE_B30",
+            "code": "1.3.2.5."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.2.6.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.2.6."
+          }
+        }
+      ],
+      "levels": [
+        "-0,100",
+        "+5,900",
+        "+11,900",
+        "+16,400",
+        "+22,400",
+        "+28,400",
+        "+34,400",
+        "+38,900",
+        "+44,900"
+      ],
+      "note": [
+        "Строка 3.2.4 КС-6а одна на девять отметок. Отметки создаются как дочерние",
+        "конструктивы без собственной базы сравнения: делить 4826 м3 поровну нельзя,",
+        "площади перекрытий разные. Захватки привязываются к отметке, база и прогноз",
+        "считаются на уровне 'Перекрытия ЛПК' целиком, пока не выпущен КЖ по отметке",
+        "или пока сметчик не задаст площади вручную (поле estimate_share)."
+      ],
+      "workCodesResource": [
+        "1.3.2.4."
+      ]
+    },
+    {
+      "code": "3.2-walls",
+      "parent": "3.2",
+      "name": "Стены ЛК и ЛШ ЛПК",
+      "kind": "wall",
+      "workCodes": [
+        "3.2.7."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B30",
+          "code": "3.2.8.",
+          "estimate": {
+            "material": "CONCRETE_B30",
+            "code": "1.3.2.8."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.2.9.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.2.9."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.2.7."
+      ]
+    },
+    {
+      "code": "3.2-stairs",
+      "parent": "3.2",
+      "name": "Лестничные марши и площадки ЛПК",
+      "kind": "stairs",
+      "workCodes": [
+        "3.2.10."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B25",
+          "code": "3.2.11.",
+          "estimate": {
+            "material": "CONCRETE_B25",
+            "code": "1.3.2.11."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.2.12.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.2.12."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.2.10."
+      ]
+    },
+    {
+      "code": "3.3-prep",
+      "parent": "3.3",
+      "name": "Бетонная подготовка приямков",
+      "kind": "prep",
+      "workCodes": [
+        "3.3.1."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B7_5",
+          "code": "3.3.2.",
+          "estimate": {
+            "material": "CONCRETE_B7_5",
+            "code": "1.3.3.2."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.3.1."
+      ]
+    },
+    {
+      "code": "3.3-body",
+      "parent": "3.3",
+      "name": "Приямки ворот и ввода коммуникаций",
+      "kind": "pit",
+      "workCodes": [
+        "3.3.3."
+      ],
+      "supply": [
+        {
+          "material": "CONCRETE_B25",
+          "code": "3.3.4.",
+          "estimate": {
+            "material": "CONCRETE_B25",
+            "code": "1.3.3.4."
+          }
+        },
+        {
+          "material": "REBAR",
+          "code": "3.3.5.",
+          "estimate": {
+            "material": "REBAR",
+            "code": "1.3.3.5."
+          }
+        }
+      ],
+      "workCodesResource": [
+        "1.3.3.3."
+      ]
+    },
+    {
+      "code": "4.2-screed",
+      "parent": "4.2",
+      "name": "Бетонная стяжка кровли",
+      "kind": "other",
+      "workCodes": [],
+      "supply": [
+        {
+          "material": "CONCRETE_B15",
+          "code": "4.2.13.",
+          "estimate": {
+            "material": "CONCRETE_B15",
+            "code": "1.4.2.3."
+          }
+        }
+      ],
+      "note": "Работа 4.2.12 измеряется в м2 (1923), поэтому конструктивный объём выводится из объёма закупки делением на К.",
+      "workCodesResource": []
+    }
+  ],
+  "materials": {
+    "_comment": "deliveryRow — наименование строки на листе «приходы», по нему сшивается приход.",
+    "concrete": [
+      {
+        "code": "CONCRETE_B7_5",
+        "name": "Бетон В7,5",
+        "class": "В7,5",
+        "deliveryRow": "Бетон В7,5"
+      },
+      {
+        "code": "CONCRETE_B15",
+        "name": "Бетон В15",
+        "class": "В15",
+        "deliveryRow": "Бетон В15 (М3)"
+      },
+      {
+        "code": "CONCRETE_B25",
+        "name": "Бетон В25",
+        "class": "В25",
+        "deliveryRow": "Бетон В25 (М3)"
+      },
+      {
+        "code": "CONCRETE_B30",
+        "name": "Бетон В30",
+        "class": "В30",
+        "deliveryRow": "Бетон В30"
+      }
+    ],
+    "rebarAggregate": {
+      "code": "REBAR",
+      "name": "Арматура в ассортименте",
+      "deliveryRow": "Арматура (Тн)",
+      "_comment": "Строка-агрегат на листе «приходы» дневных значений не содержит и используется как контрольная сумма к сумме SKU (384,91 т)."
+    },
+    "rebarSkus": [
+      {
+        "code": "REBAR_8_A240",
+        "diameter": 8,
+        "class": "А240",
+        "deliveryRow": "8-А240"
+      },
+      {
+        "code": "REBAR_8_A500",
+        "diameter": 8,
+        "class": "А500",
+        "deliveryRow": "8-А500"
+      },
+      {
+        "code": "REBAR_10_A240",
+        "diameter": 10,
+        "class": "А240",
+        "deliveryRow": "10-А240"
+      },
+      {
+        "code": "REBAR_10_A500",
+        "diameter": 10,
+        "class": "А500",
+        "deliveryRow": "10-А500"
+      },
+      {
+        "code": "REBAR_12_A240",
+        "diameter": 12,
+        "class": "А240",
+        "deliveryRow": "12-А240"
+      },
+      {
+        "code": "REBAR_12_A500",
+        "diameter": 12,
+        "class": "А500",
+        "deliveryRow": "12-А500"
+      },
+      {
+        "code": "REBAR_14_A240",
+        "diameter": 14,
+        "class": "А240",
+        "deliveryRow": "14-А240"
+      },
+      {
+        "code": "REBAR_14_A500",
+        "diameter": 14,
+        "class": "А500",
+        "deliveryRow": "14-А500"
+      },
+      {
+        "code": "REBAR_16_A500",
+        "diameter": 16,
+        "class": "А500",
+        "deliveryRow": "16-А500"
+      },
+      {
+        "code": "REBAR_18_A500",
+        "diameter": 18,
+        "class": "А500",
+        "deliveryRow": "18-А500"
+      },
+      {
+        "code": "REBAR_20_A500",
+        "diameter": 20,
+        "class": "А500",
+        "deliveryRow": "20-А500"
+      },
+      {
+        "code": "REBAR_22_A500",
+        "diameter": 22,
+        "class": "А500",
+        "deliveryRow": "22-А500"
+      },
+      {
+        "code": "REBAR_25_A500",
+        "diameter": 25,
+        "class": "А500",
+        "deliveryRow": "25-А500"
+      },
+      {
+        "code": "REBAR_28_A500",
+        "diameter": 28,
+        "class": "А500",
+        "deliveryRow": "28-А500"
+      },
+      {
+        "code": "REBAR_32_A500",
+        "diameter": 32,
+        "class": "А500",
+        "deliveryRow": "32-А500"
+      },
+      {
+        "code": "REBAR_36_A500",
+        "diameter": 36,
+        "class": "А500",
+        "deliveryRow": "36-А500"
+      }
+    ]
+  },
+  "revisions": {
+    "_comment": "Лист КС-6а → редакция и дата, до которой помесячные объёмы считаются фактом.",
+    "sheets": [
+      {
+        "sheet": "31.07.2026",
+        "revision": "ДС2",
+        "effectiveFrom": "2026-07-31",
+        "factThrough": "2026-07-31"
+      },
+      {
+        "sheet": "31.08.2026 по ДС3",
+        "revision": "ДС3",
+        "effectiveFrom": "2026-08-31",
+        "factThrough": "2026-08-31"
+      }
+    ],
+    "current": "ДС3"
+  }
+}
