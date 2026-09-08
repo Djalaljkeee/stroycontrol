@@ -15,7 +15,9 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
     "extract": "python3 scripts/extract/xls_to_json.py",
-    "import:all": "tsx scripts/import/all.ts"
+    "import:all": "tsx scripts/import/all.ts",
+    "check:report": "tsx scripts/check-report.ts",
+    "check:export": "tsx scripts/check-export.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -34,6 +36,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "drizzle-kit": "^0.31.10",
+    "playwright": "^1.63.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.20.5",

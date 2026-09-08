@@ -65,8 +65,13 @@ export interface Cell {
   baseDesign: number | null;
   /** Объём закупки по базе. */
   basePurchase: number | null;
-  /** Сметный лимит закупки — против него считается перерасход в рублях. */
+  /**
+   * Сметный лимит закупки с учётом переездов между классами бетона —
+   * против него считается перерасход.
+   */
   estimatePurchase: number | null;
+  /** Тот же лимит, как он записан в ресурсной, — для сверки итогов. */
+  estimateOriginal: number | null;
   /** Объём закупки по проекту, если КЖ выпущен. */
   projectPurchase: number | null;
   completedDesign: number;
@@ -274,9 +279,13 @@ export async function buildReport(): Promise<Report> {
     const material = materialById.get(materialId);
     const current = material?.kind === 'concrete' ? currentConcreteMaterials(structureId) : null;
     const superseded = current != null && current.size > 0 && !current.has(materialId);
+    // Лимит вытесненной строки не исчезает, а переезжает в класс, которым
+    // конструктив закрывается по действующему ДС.
+    const transferTo = superseded && current != null ? [...current] : [];
 
     return {
       superseded,
+      transferTo,
       resolved,
       design: designQuantityOf(resolved, k),
       purchase: purchaseQuantityOf(resolved, k),
@@ -318,6 +327,25 @@ export async function buildReport(): Promise<Report> {
     return total;
   };
 
+  /**
+   * Сметный лимит, переехавший в этот класс с вытесненных строк того же
+   * конструктива. Плита ЛПК: в ресурсной её 1736 м3 записаны как В25, а по ДС3
+   * она заливается В30 — значит лимит В25 надо читать как лимит В30, иначе по
+   * одному классу нарисуется экономия 1736 м3, а по другому — такой же
+   * перерасход, которых в действительности нет.
+   */
+  const incomingTransfer = (structureId: number, materialId: number, k: number): number => {
+    let total = 0;
+    for (const m of materialList) {
+      if (m.kind !== 'concrete' || m.id === materialId) continue;
+      const other = ownBaseline(structureId, m.id, k);
+      if (!other?.superseded) continue;
+      if (!other.transferTo.includes(materialId)) continue;
+      total += other.estimate ?? 0;
+    }
+    return total;
+  };
+
   const rollupBaseline = (
     structureId: number,
     materialId: number,
@@ -327,17 +355,32 @@ export async function buildReport(): Promise<Report> {
     design: number | null;
     purchase: number | null;
     estimate: number | null;
+    estimateOriginal: number | null;
     project: number | null;
     superseded: boolean;
   } => {
     const own = ownBaseline(structureId, materialId, k);
-    if (own) return own;
+    if (own) {
+      // Своя строка есть. Если она вытеснена, её сметный лимит уходит в другой
+      // класс, поэтому в расчёт он не идёт — но остаётся в estimateOriginal
+      // для сверки с ресурсной.
+      const incoming = incomingTransfer(structureId, materialId, k);
+      return {
+        ...own,
+        estimate: own.superseded ? incoming : (own.estimate ?? 0) + incoming || own.estimate,
+        estimateOriginal: own.estimate,
+      };
+    }
+
+    // Своей строки нет — но переехавший лимит мог прийти именно сюда.
+    const incoming = incomingTransfer(structureId, materialId, k);
 
     let anyLive = false;
     let anyAtAll = false;
     let design: number | null = null;
     let purchase: number | null = null;
-    let estimate: number | null = null;
+    let estimate: number | null = incoming > 0 ? incoming : null;
+    let estimateOriginal: number | null = null;
     let project: number | null = null;
     let resolved: ResolvedBaseline | null = null;
 
@@ -347,11 +390,13 @@ export async function buildReport(): Promise<Report> {
         anyAtAll = true;
         if (!r.superseded) anyLive = true;
       }
-      // Сметный лимит вытесненной строки в сумму входит: иначе итог по классу
-      // перестанет сходиться с ресурсной. А вот в базу для прогноза — нет:
-      // этот конструктив теперь закрывается другим классом бетона, и
-      // прогнозировать по нему расход было бы двойным счётом.
+      // Сметный лимит суммируется в двух разрезах: estimateOriginal — как в
+      // ресурсной, для сверки итогов; estimate — с учётом переездов между
+      // классами, и именно он служит лимитом для прогноза.
       if (r.estimate != null) estimate = (estimate ?? 0) + r.estimate;
+      if (r.estimateOriginal != null) estimateOriginal = (estimateOriginal ?? 0) + r.estimateOriginal;
+      // В базу для прогноза вытесненная строка не идёт: конструктив теперь
+      // закрывается другим классом, и учёт его объёма был бы двойным.
       if (r.superseded) continue;
       if (r.design != null) design = (design ?? 0) + r.design;
       if (r.purchase != null) purchase = (purchase ?? 0) + r.purchase;
@@ -362,7 +407,15 @@ export async function buildReport(): Promise<Report> {
         resolved = resolved == null || (!resolved.isEstimated && r.resolved.isEstimated) ? r.resolved : resolved;
       }
     }
-    return { resolved, design, purchase, estimate, project, superseded: anyAtAll && !anyLive };
+    return {
+      resolved,
+      design,
+      purchase,
+      estimate,
+      estimateOriginal,
+      project,
+      superseded: anyAtAll && !anyLive,
+    };
   };
 
   const poursByStructure = new Map<number, typeof pourRows>();
@@ -538,6 +591,7 @@ interface CellInput {
     design: number | null;
     purchase: number | null;
     estimate: number | null;
+    estimateOriginal: number | null;
     project: number | null;
     superseded: boolean;
   };
@@ -687,6 +741,7 @@ function buildCell(input: CellInput): Cell | null {
     baseDesign: base.design,
     basePurchase: base.purchase,
     estimatePurchase: base.estimate,
+    estimateOriginal: base.estimateOriginal ?? base.estimate,
     projectPurchase: base.project,
     completedDesign,
     k,
