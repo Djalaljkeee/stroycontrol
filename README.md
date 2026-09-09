@@ -156,6 +156,57 @@ npm run dev                   # http://localhost:3000
 `estimator` (сметчик — базы сравнения), `viewer` (только чтение). Пароль общий из
 `SEED_PASSWORD`, **его нужно сменить после первого входа**.
 
+## Развёртывание
+
+`docker-compose.yml` поднимает два контейнера: `stroycontrol-db` (Postgres 16, том
+`stroycontrol_pgdata`) и `stroycontrol-app`. Порт наружу приложение не публикует —
+предполагается внешний обратный прокси, который терминирует TLS и резолвит
+приложение по имени `stroycontrol` во внешней docker-сети (по умолчанию
+`caddy_net`, переопределяется переменной `PROXY_NETWORK`). Если прокси нет,
+в compose закомментирован блок `ports` для проброса на loopback.
+
+```bash
+cp .env.docker.example .env      # заполнить POSTGRES_PASSWORD, SESSION_SECRET, SEED_PASSWORD
+docker compose build app
+docker compose up -d db
+docker compose run --rm app npm run db:migrate
+docker compose run --rm app npm run db:seed
+docker compose run --rm app npm run import:all
+docker compose up -d app
+```
+
+`import:all` печатает сверку семи контрольных сумм — развёртывание считается
+удачным, только если все семь сошлись.
+
+Пример блока для Caddy:
+
+```
+stroycontrol.example.com {
+    reverse_proxy stroycontrol:3000 {
+        header_up Host            {host}
+        header_up X-Real-IP       {client_ip}
+        header_up X-Forwarded-For {client_ip}
+        # Выгрузка в Excel собирается на лету и на больших отчётах идёт дольше
+        # дефолтного таймаута.
+        transport http {
+            read_timeout 300s
+        }
+    }
+    encode zstd gzip
+}
+```
+
+Обновление до свежего коммита — `./scripts/deploy.sh`: `git pull`, пересборка
+образа, миграции, перезапуск. `import:all` он не вызывает — импорт пересоздаёт
+записи с `source` = `ks6a` / `prihody` и запускается руками после нового ДС или
+выпуска КЖ.
+
+Образ несёт `node_modules` целиком (около 490 МБ): standalone-вывод Next не
+включён, а `tsx` и остальные devDependencies нужны для migrate / seed / import
+уже в развёрнутом виде. На сборке передаётся заглушка `DATABASE_URL` — без неё
+падает импорт `src/db/index.ts`; к базе сборка не обращается, все страницы
+с данными помечены `force-dynamic`.
+
 ## Проверка
 
 ```bash

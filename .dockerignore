@@ -1,0 +1,8 @@
+.git
+node_modules
+.next
+.pgdata
+coverage
+# Исходные .xls нужны только для разового `npm run extract`; импорт работает
+# с data/extracted/*.json, которые лежат в репозитории.
+data/source
