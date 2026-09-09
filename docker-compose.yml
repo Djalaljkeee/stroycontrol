@@ -1,0 +1,67 @@
+# Имя проекта задано явно: тома и сеть не должны зависеть от того, как назван
+# каталог с чекаутом.
+name: stroycontrol
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: stroycontrol-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stroycontrol
+      POSTGRES_USER: stroycontrol
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан, см. .env.docker.example}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stroycontrol -d stroycontrol"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Порт наружу не публикуем: база нужна только приложению в этой же сети.
+    networks:
+      - default
+
+  app:
+    build:
+      context: .
+    image: stroycontrol-app:local
+    container_name: stroycontrol-app
+    restart: unless-stopped
+    env_file: .env
+    # DATABASE_URL собирается из POSTGRES_PASSWORD — один источник правды для
+    # пароля. `environment:` имеет приоритет над `env_file:`, поэтому значение
+    # из .env (оно там для запуска скриптов вручную) здесь не мешает.
+    environment:
+      DATABASE_URL: "postgres://stroycontrol:${POSTGRES_PASSWORD}@db:5432/stroycontrol"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # /login не ходит в базу — проверка отвечает на вопрос «поднялся ли Next»,
+      # а не «жива ли БД»: за это отвечает healthcheck самой db.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/login').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      default: {}
+      # Внешний обратный прокси (в нашем случае общий caddy) резолвит
+      # приложение по имени stroycontrol и сам терминирует TLS. Порт на хост
+      # не публикуется намеренно: единственный вход — через прокси.
+      # Своего прокси нет — закомментируйте блок proxy и раскомментируйте ports.
+      proxy:
+        aliases:
+          - stroycontrol
+    # ports:
+    #   - "127.0.0.1:3000:3000"
+
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK:-caddy_net}
+
+volumes:
+  pgdata:
+    driver: local
