@@ -38,6 +38,9 @@ export default async function DashboardPage() {
       return r.cells
         .filter((c) => c.material.kind === 'concrete' || c.material.isAggregate)
         .filter((c) => c.forecast.verdict === 'over' || c.forecast.verdict === 'warning')
+        // Без своей базы К считается от армированности родителя — для захваток
+        // КЖ0, у которых нет ведомостей, это даёт ложную тревогу.
+        .filter((c) => c.forecast.progress != null)
         .map((c) => ({ structure: s, cell: c }));
     })
     // Родительский узел повторяет проблему ребёнка: показываем самый глубокий.
@@ -142,46 +145,57 @@ export default async function DashboardPage() {
       </Card>
 
       <Card
-        title="Неподтверждённый расход"
-        hint="Материал приехал на объект, но не привязан ни к одной конструкции и на складе не числится. До разнесения по захваткам этот объём нельзя ни списать, ни предъявить."
+        title="Приход, расход и процентовка по объекту"
+        hint="Расход — разнесённое на конструктивы плюс списанное актами; на ярусах КЖ0 и 1, где приход не делился по конструктивам, — запроцентованное. Минус в «Приход − расход» значит: закрыто по норме больше, чем привезено. Плюс — приход без привязки к конструкции."
       >
-        {unconfirmed.length === 0 ? (
-          <Empty>Весь приход разнесён по конструкциям.</Empty>
-        ) : (
-          <>
-            <table className="grid-table text-sm">
-              <thead>
-                <tr>
-                  <th>Материал</th>
-                  <th>Приход</th>
-                  <th>Списано</th>
-                  <th>Не подтверждено</th>
-                  <th>В рублях</th>
+        <table className="grid-table text-sm">
+          <thead>
+            <tr>
+              <th>Материал</th>
+              <th>Приход</th>
+              <th>Расход</th>
+              <th>Приход − расход</th>
+              <th>Запроцентовано</th>
+              <th title="Привезено, но ещё не закрыто перед заказчиком">Не запроцентовано</th>
+              <th title="Списано на конструктивы, по которым ещё нет выполнения">В работе</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tracked.map((c) => {
+              const diff = c.material.kind === 'concrete' ? c.balance.unconfirmed : c.balance.stock;
+              return (
+                <tr key={c.material.id}>
+                  <td>{c.material.name}</td>
+                  <td>
+                    {num(c.balance.incoming)} {c.material.unit}
+                  </td>
+                  <td>{num(c.balance.consumed)}</td>
+                  <td className={diff > 0.01 ? 'font-medium text-amber-700' : diff < -0.01 ? 'text-slate-500' : undefined}>
+                    {signed(diff)}
+                  </td>
+                  <td>{num(c.closed)}</td>
+                  <td>{num(c.balance.incoming - c.closed)}</td>
+                  <td>{num(c.inProgress)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {unconfirmed.map((c) => (
-                  <tr key={c.material.id}>
-                    <td>{c.material.name}</td>
-                    <td>
-                      {num(c.balance.incoming)} {c.material.unit}
-                    </td>
-                    <td>{num(c.balance.consumed)}</td>
-                    <td className="font-medium text-red-700">{num(c.balance.unconfirmed)}</td>
-                    <td>{money(c.balance.unconfirmed * (c.unitCost ?? 0))}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-3 text-sm text-slate-600">
-              Разнести приход по захваткам можно на странице{' '}
-              <Link href="/deliveries" className="text-sky-700 underline">
-                Приходы
-              </Link>
-              .
-            </p>
-          </>
-        )}
+              );
+            })}
+          </tbody>
+        </table>
+        <p className="mt-3 text-sm text-slate-600">
+          Разнести приход —{' '}
+          <Link href="/deliveries" className="text-sky-700 underline">
+            Приходы
+          </Link>
+          , закрыть месяц —{' '}
+          <Link href="/closings" className="text-sky-700 underline">
+            Процентовка
+          </Link>
+          , сверка по этажам —{' '}
+          <Link href="/tiers" className="text-sky-700 underline">
+            Ярусы
+          </Link>
+          .
+        </p>
       </Card>
 
       {report.classConflicts.length > 0 ? (

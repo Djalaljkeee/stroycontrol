@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import type { ActionState } from '@/actions/records';
+import type { TargetGroup } from '@/lib/targets';
 
 export function Field({
   label,
@@ -30,6 +31,28 @@ export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
 
 export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return <select {...props} className={control} />;
+}
+
+/** Выбор конструктива или яруса: группы по ярусам, как блоки листа «приходы». */
+export function TargetSelect({
+  groups,
+  placeholder,
+  ...props
+}: { groups: TargetGroup[]; placeholder: string } & React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select {...props} className={props.className ?? control}>
+      <option value="">{placeholder}</option>
+      {groups.map((g) => (
+        <optgroup key={g.label} label={g.label}>
+          {g.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
 }
 
 export function ActionForm({

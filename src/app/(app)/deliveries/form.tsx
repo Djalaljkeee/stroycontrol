@@ -2,22 +2,19 @@
 
 import { useState } from 'react';
 import { createDelivery } from '@/actions/records';
-import { ActionForm, Field, Select, TextInput } from '@/components/forms';
+import { ActionForm, Field, Select, TargetSelect, TextInput } from '@/components/forms';
+import type { TargetGroup } from '@/lib/targets';
 
 export function DeliveryForm({
   materials,
-  pours,
-  structures,
+  targets,
 }: {
   materials: { id: number; name: string; kind: string; unit: string }[];
-  pours: { id: number; label: string; structureId: number; concreteMaterialId: number }[];
-  structures: { id: number; name: string }[];
+  targets: TargetGroup[];
 }) {
   const [materialId, setMaterialId] = useState<string>('');
   const material = materials.find((m) => String(m.id) === materialId);
   const isConcrete = material?.kind === 'concrete';
-  const structureName = new Map(structures.map((s) => [s.id, s.name]));
-  const options = pours.filter((p) => String(p.concreteMaterialId) === materialId);
 
   return (
     <ActionForm action={createDelivery} submitLabel="Записать приход">
@@ -44,21 +41,19 @@ export function DeliveryForm({
         <TextInput name="quantity" inputMode="decimal" placeholder="25,41" />
       </Field>
       <Field
-        label="Захватка"
+        label="Куда"
         hint={
           isConcrete
-            ? 'Обязательна для бетона: он уходит сразу в дело'
-            : 'Для арматуры не заполняется — она идёт на склад'
+            ? 'Обязательно для бетона: он уходит сразу в дело. Если на площадке не разделили — весь ярус'
+            : 'Для арматуры — под конкретный блок яруса или на склад'
         }
       >
-        <Select name="pourId" disabled={!isConcrete} defaultValue="">
-          <option value="">{isConcrete ? 'Выберите захватку' : 'на склад'}</option>
-          {options.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.label} · {structureName.get(p.structureId) ?? ''}
-            </option>
-          ))}
-        </Select>
+        <TargetSelect
+          name="target"
+          defaultValue=""
+          groups={targets}
+          placeholder={isConcrete ? 'Выберите ярус или конструктив' : 'на склад'}
+        />
       </Field>
       <Field label="Номер ТТН">
         <TextInput name="ttnNumber" placeholder="ТТН-10482" />

@@ -6,10 +6,12 @@ import { logout } from '@/actions/auth';
 const NAV = [
   { href: '/dashboard', label: 'Дашборд' },
   { href: '/balance', label: 'Остатки' },
+  { href: '/tiers', label: 'Ярусы' },
   { href: '/structures', label: 'Конструктивы' },
   { href: '/pours', label: 'Заливки' },
   { href: '/deliveries', label: 'Приходы' },
   { href: '/issues', label: 'Списания' },
+  { href: '/closings', label: 'Процентовка' },
   { href: '/revisions', label: 'Редакции' },
 ];
 

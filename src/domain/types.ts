@@ -32,8 +32,14 @@ export interface BaselineEntry {
 
 export interface DeliveryRecord {
   quantity: number;
+  /**
+   * Приход разнесён на конструктив — напрямую или через захватку. Без поля
+   * решает `pourId`. Разнесение только на ярус целиком сюда не относится:
+   * оно не говорит, в какой конструктив ушёл материал.
+   */
+  allocated?: boolean;
   /** null — приход не привязан к захватке (для бетона это неподтверждённый расход). */
-  pourId: number | null;
+  pourId?: number | null;
 }
 
 export interface IssueRecord {

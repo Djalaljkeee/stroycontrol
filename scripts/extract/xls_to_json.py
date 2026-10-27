@@ -30,7 +30,7 @@ except ImportError:
 SRC = 'data/source'
 OUT = 'data/extracted'
 
-KS6A = os.path.join(SRC, 'КС-6а_ДС3.xls')
+KS6A = os.path.join(SRC, 'КС-6а_ДС5.xls')
 RESOURCE = os.path.join(SRC, 'ресурсная_приходы.xls')
 
 
@@ -152,16 +152,41 @@ def extract_resource():
     return {'matrixColumns': [m['label'] for m in matrix], 'rows': rows}
 
 
+# Колонки листа «приходы» до дневных дат. Набор менялся между версиями файла
+# (в октябре добавились «Кол-во c коэфициентом» и «Запроцентовано»), поэтому
+# колонки ищутся по подписи в шапке, а не по номеру.
+DELIVERY_COLUMNS = [
+    ('estimate', lambda s: 'смете' in s),
+    ('project', lambda s: s.startswith('Кол-во по проекту')),
+    ('projectWithK', lambda s: 'коэф' in s.lower() and s.startswith('Кол-во')),
+    ('incoming', lambda s: s == 'Приход'),
+    ('closed', lambda s: s == 'Запроцентовано'),
+]
+
+
 def extract_deliveries():
-    """Лист «приходы»: позиции × дневные колонки."""
+    """Лист «приходы»: позиции × дневные колонки.
+
+    С октябрьской версии лист разбит на блоки по ярусам и конструктивам
+    («КЖ1 от +5,920 до +11,920 ( Стены)»): строки блока несут проектный объём,
+    приход по дням и запроцентованное. Строки-заголовки блоков сохраняются как
+    есть — к ярусам и конструктивам их сопоставляет data/mapping.json.
+    """
     book = xlrd.open_workbook(RESOURCE)
     sh = book.sheet_by_name('приходы')
 
+    columns = {}
     dates = []
-    for c in range(7, sh.ncols):
-        d = cell(sh, book, 0, c)
-        if isinstance(d, str) and len(d) == 10 and d[4] == '-':
-            dates.append({'col': c, 'date': d})
+    for c in range(sh.ncols):
+        label = cell(sh, book, 0, c)
+        if isinstance(label, str) and len(label) == 10 and label[4] == '-' and label[7] == '-':
+            dates.append({'col': c, 'date': label})
+            continue
+        if not isinstance(label, str):
+            continue
+        for field, match in DELIVERY_COLUMNS:
+            if field not in columns and match(label.strip()):
+                columns[field] = c
 
     rows = []
     for r in range(1, sh.nrows):
@@ -173,18 +198,12 @@ def extract_deliveries():
             v = num(cell(sh, book, r, d['col']))
             if v:
                 daily.append({'date': d['date'], 'quantity': v})
-        rows.append({
-            'row': r,
-            'name': name,
-            'estimate': num(cell(sh, book, r, 1)),
-            'project': num(cell(sh, book, r, 2)),
-            'diffEstimateProject': num(cell(sh, book, r, 3)),
-            'diffProjectIncoming': num(cell(sh, book, r, 4)),
-            'incoming': num(cell(sh, book, r, 5)),
-            'remainder': num(cell(sh, book, r, 6)),
-            'daily': daily,
-        })
-    return {'dates': [d['date'] for d in dates], 'rows': rows}
+        row = {'row': r, 'name': name}
+        for field, _ in DELIVERY_COLUMNS:
+            row[field] = num(cell(sh, book, r, columns[field])) if field in columns else None
+        row['daily'] = daily
+        rows.append(row)
+    return {'dates': [d['date'] for d in dates], 'columns': columns, 'rows': rows}
 
 
 def write(name, data):

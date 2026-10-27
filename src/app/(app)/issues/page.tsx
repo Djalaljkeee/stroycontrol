@@ -4,6 +4,7 @@ import { issues, materials, pours, structures } from '@/db/schema';
 import { buildReport } from '@/lib/report';
 import { date, n, num } from '@/lib/format';
 import { canWrite, currentUser } from '@/lib/auth';
+import { loadTargetGroups } from '@/lib/targets';
 import { isImplausible } from '@/domain';
 import { Card, Empty } from '@/components/ui';
 import { IssueForm } from './form';
@@ -16,18 +17,18 @@ const PAGE_SIZE = 60;
 
 export default async function IssuesPage() {
   const user = await currentUser();
-  const [report, materialRows, structureRows, pourRows, rows] = await Promise.all([
+  const [report, materialRows, structureRows, pourRows, rows, targetGroups] = await Promise.all([
     buildReport(),
     db.select().from(materials).where(eq(materials.kind, 'rebar')).orderBy(materials.id),
     db.select().from(structures).orderBy(structures.sortOrder),
     db.select().from(pours).orderBy(desc(pours.pouredAt)),
     db.select().from(issues).orderBy(desc(issues.date), desc(issues.id)),
+    loadTargetGroups({ includeTiers: false }),
   ]);
 
   const materialById = new Map(materialRows.map((m) => [m.id, m]));
   const structureById = new Map(structureRows.map((s) => [s.id, s]));
   const pourById = new Map(pourRows.map((p) => [p.id, p]));
-  const targets = structureRows.filter((s) => s.kind !== 'object' && s.kind !== 'section');
 
   // Удельное армирование по конструктивам — проверка правдоподобия списаний.
   const specific = report.structures
@@ -52,8 +53,8 @@ export default async function IssuesPage() {
       {canWrite(user, 'issues') ? (
         <Card title="Новое списание">
           <IssueForm
-            materials={materialRows.filter((m) => !m.isAggregate || true)}
-            structures={targets}
+            materials={materialRows}
+            targets={targetGroups}
             pours={pourRows}
             structureNames={structureRows}
           />
@@ -140,7 +141,7 @@ export default async function IssuesPage() {
                       <td>{structureById.get(i.structureId)?.name ?? '—'}</td>
                       <td>{pour?.label ?? '—'}</td>
                       <td>{i.document ?? '—'}</td>
-                      <td>{i.source === 'ks6a' ? 'импорт КС-6а' : 'ручной ввод'}</td>
+                      <td>{i.source === 'ks6a' ? 'по процентовке КС-6а' : 'ручной ввод'}</td>
                     </tr>
                   );
                 })}

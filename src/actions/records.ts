@@ -4,8 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { auditLog, deliveries, issues, materials, pours } from '@/db/schema';
+import { auditLog, closings, deliveries, issues, materials, pours, structures } from '@/db/schema';
 import { requireWrite } from '@/lib/auth';
+import { parseTarget } from '@/lib/targets';
 
 export type ActionState = { error?: string; ok?: string };
 
@@ -20,6 +21,18 @@ const decimal = z
   .refine((v) => Number.isFinite(v) && v > 0, 'Количество должно быть положительным числом');
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Укажите дату');
+
+/** Ярус конструктива — чтобы приход, разнесённый на захватку, был виден и в разрезе ярусов. */
+async function tierOfStructure(structureId: number): Promise<number | null> {
+  const [row] = await db.select({ tierId: structures.tierId }).from(structures).where(eq(structures.id, structureId));
+  return row?.tierId ?? null;
+}
+
+function revalidateAll() {
+  for (const path of ['/tiers', '/deliveries', '/issues', '/closings', '/balance', '/dashboard', '/structures']) {
+    revalidatePath(path);
+  }
+}
 
 async function audit(userId: number, action: string, entity: string, entityId: number, payload: unknown) {
   await db.insert(auditLog).values({
@@ -68,9 +81,8 @@ export async function createPour(_prev: ActionState, formData: FormData): Promis
     .returning({ id: pours.id });
 
   await audit(user.id, 'create', 'pour', row.id, v);
+  revalidateAll();
   revalidatePath('/pours');
-  revalidatePath('/balance');
-  revalidatePath('/dashboard');
   return { ok: `Захватка «${v.label}» создана` };
 }
 
@@ -95,10 +107,7 @@ const deliverySchema = z.object({
   date: isoDate,
   materialId: z.coerce.number().int().positive('Выберите материал'),
   quantity: decimal,
-  pourId: z
-    .string()
-    .optional()
-    .transform((v) => (v && v !== '' ? Number(v) : null)),
+  target: z.string().optional(),
   ttnNumber: z.string().trim().optional(),
   supplier: z.string().trim().optional(),
 });
@@ -114,29 +123,29 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
   const parsed = deliverySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail(parsed.error.issues[0]!.message);
   const v = parsed.data;
+  const target = parseTarget(v.target);
 
   const [material] = await db.select().from(materials).where(eq(materials.id, v.materialId));
   if (!material) return fail('Материал не найден');
 
-  // Бетон не складируется: поставка без захватки сразу становится
-  // неподтверждённым расходом, поэтому привязку требуем при вводе.
-  if (material.kind === 'concrete' && v.pourId == null) {
-    return fail('Для бетона укажите захватку: без неё поставка попадёт в неподтверждённый расход');
-  }
-  if (material.kind === 'rebar' && v.pourId != null) {
-    return fail('Арматура приходит на склад — списывать её нужно актом монтажа, а не приходом');
+  // Бетон не складируется: поставка без разнесения сразу становится
+  // неподтверждённым расходом, поэтому куда он ушёл, спрашиваем при вводе.
+  if (material.kind === 'concrete' && target.structureId == null && target.tierId == null) {
+    return fail('Для бетона укажите конструктив или ярус: без этого поставка попадёт в неподтверждённый расход');
   }
   if (material.kind === 'rebar' && material.isAggregate) {
     return fail('Приход арматуры вводится по конкретному диаметру, а не общей позицией');
   }
 
+  const tierId = target.structureId != null ? await tierOfStructure(target.structureId) : target.tierId;
   const [row] = await db
     .insert(deliveries)
     .values({
       date: v.date,
       materialId: v.materialId,
       quantity: String(v.quantity),
-      pourId: v.pourId,
+      structureId: target.structureId,
+      tierId,
       ttnNumber: v.ttnNumber || null,
       supplier: v.supplier || null,
       createdBy: user.id,
@@ -144,31 +153,36 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
     .returning({ id: deliveries.id });
 
   await audit(user.id, 'create', 'delivery', row.id, v);
-  revalidatePath('/deliveries');
-  revalidatePath('/balance');
-  revalidatePath('/dashboard');
-  return { ok: `Приход ${v.quantity} ${material.unit} записан` };
+  revalidateAll();
+  const where =
+    target.structureId != null ? 'на конструктив' : target.tierId != null ? 'на ярус' : 'на склад';
+  return { ok: `Приход ${v.quantity} ${material.unit} записан ${where}` };
 }
 
 const allocateSchema = z.object({
   deliveryId: z.coerce.number().int().positive(),
-  pourId: z.coerce.number().int().positive('Выберите захватку'),
+  target: z.string().min(1, 'Выберите, куда разнести'),
 });
 
-/** Разнесение импортированного прихода бетона по захваткам. */
+/**
+ * Разнесение прихода: на конструктив (это и есть списание) или на ярус целиком.
+ * Повторное разнесение уточняет прежнее — например, приход «на ярус 2» переносится
+ * на «стены +5,920», когда прораб сверил ТТН с захватками.
+ */
 export async function allocateDelivery(formData: FormData): Promise<void> {
   const user = await requireWrite('deliveries');
   const v = allocateSchema.parse(Object.fromEntries(formData));
+  const target = parseTarget(v.target);
+  if (target.structureId == null && target.tierId == null) throw new Error('Не выбрано, куда разнести');
 
+  const tierId = target.structureId != null ? await tierOfStructure(target.structureId) : target.tierId;
   await db
     .update(deliveries)
-    .set({ pourId: v.pourId, needsAllocation: false })
+    .set({ structureId: target.structureId, tierId, pourId: null, needsAllocation: false })
     .where(eq(deliveries.id, v.deliveryId));
 
-  await audit(user.id, 'allocate', 'delivery', v.deliveryId, v);
-  revalidatePath('/deliveries');
-  revalidatePath('/balance');
-  revalidatePath('/dashboard');
+  await audit(user.id, 'allocate', 'delivery', v.deliveryId, { ...v, ...target, tierId });
+  revalidateAll();
 }
 
 // ── Списания ────────────────────────────────────────────────────────────────
@@ -177,7 +191,7 @@ const issueSchema = z.object({
   date: isoDate,
   materialId: z.coerce.number().int().positive('Выберите материал'),
   quantity: decimal,
-  structureId: z.coerce.number().int().positive('Выберите конструктив'),
+  target: z.string().min(1, 'Выберите конструктив'),
   pourId: z
     .string()
     .optional()
@@ -202,6 +216,8 @@ export async function createIssue(_prev: ActionState, formData: FormData): Promi
   if (material.kind !== 'rebar') {
     return fail('Актом монтажа списывается арматура; бетон списывается привязкой ТТН к захватке');
   }
+  const { structureId } = parseTarget(v.target);
+  if (structureId == null) return fail('Списание делается на конструктив, а не на ярус целиком');
 
   const [row] = await db
     .insert(issues)
@@ -209,7 +225,7 @@ export async function createIssue(_prev: ActionState, formData: FormData): Promi
       date: v.date,
       materialId: v.materialId,
       quantity: String(v.quantity),
-      structureId: v.structureId,
+      structureId,
       pourId: v.pourId,
       document: v.document || null,
       createdBy: user.id,
@@ -217,10 +233,70 @@ export async function createIssue(_prev: ActionState, formData: FormData): Promi
     .returning({ id: issues.id });
 
   await audit(user.id, 'create', 'issue', row.id, v);
-  revalidatePath('/issues');
-  revalidatePath('/balance');
-  revalidatePath('/dashboard');
+  revalidateAll();
   return { ok: `Списано ${v.quantity} ${material.unit}` };
+}
+
+// ── Процентовка ─────────────────────────────────────────────────────────────
+
+const closingSchema = z.object({
+  /** Месяц из <input type="month">: '2026-11'. Хранится последним днём месяца. */
+  month: z.string().regex(/^\d{4}-\d{2}$/, 'Укажите месяц'),
+  target: z.string().min(1, 'Выберите конструктив'),
+  materialId: z.coerce.number().int().positive('Выберите материал'),
+  quantity: decimal,
+  designQuantity: z
+    .string()
+    .optional()
+    .transform((v) => (v && v.trim() !== '' ? Number(v.replace(',', '.').replace(/\s/g, '')) : null))
+    .refine((v) => v == null || (Number.isFinite(v) && v > 0), 'Объём конструктива — положительное число'),
+  document: z.string().trim().optional(),
+});
+
+/**
+ * Запись процентовки за месяц: сколько закрыто перед заказчиком по строке КС-6а.
+ * Количество — в единицах строки поставки (м3 закупки, т арматуры); объём
+ * конструктива — по строке работ, от него считается выполнение.
+ */
+export async function createClosing(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  let user;
+  try {
+    user = await requireWrite('closings');
+  } catch (e) {
+    return fail((e as Error).message);
+  }
+
+  const parsed = closingSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return fail(parsed.error.issues[0]!.message);
+  const v = parsed.data;
+  const { structureId } = parseTarget(v.target);
+  if (structureId == null) return fail('Процентовка закрывается на конструктив или захватку, а не на ярус');
+
+  const [material] = await db.select().from(materials).where(eq(materials.id, v.materialId));
+  if (!material) return fail('Материал не найден');
+  if (material.kind === 'concrete' && v.designQuantity == null) {
+    return fail('Для бетона укажите и объём конструктива по строке работ — от него считается выполнение');
+  }
+
+  const [year, month] = v.month.split('-').map(Number);
+  const lastDay = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+
+  const [row] = await db
+    .insert(closings)
+    .values({
+      period: lastDay,
+      structureId,
+      materialId: v.materialId,
+      quantity: String(v.quantity),
+      designQuantity: v.designQuantity != null ? String(v.designQuantity) : null,
+      document: v.document || null,
+      createdBy: user.id,
+    })
+    .returning({ id: closings.id });
+
+  await audit(user.id, 'create', 'closing', row.id, v);
+  revalidateAll();
+  return { ok: `Запроцентовано ${v.quantity} ${material.unit} за ${v.month}` };
 }
 
 /** Захватки, к которым можно привязать поставку бетона данного класса. */

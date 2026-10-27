@@ -10,7 +10,7 @@ async function main() {
   console.log('\n=== ОСТАТОЧНАЯ ТАБЛИЦА (объект целиком) ===\n');
   const head = [
     'Материал'.padEnd(24), 'Ед'.padEnd(4), 'Смета'.padStart(10), 'Проект'.padStart(10),
-    'Приход'.padStart(10), 'Списано'.padStart(10), 'Склад'.padStart(10),
+    'Приход'.padStart(10), 'Списано'.padStart(10), 'Запроц'.padStart(10), 'Склад'.padStart(10),
     'Неподтв'.padStart(10), 'К_норм'.padStart(7), 'К_факт'.padStart(7),
     'Прогноз'.padStart(10), 'Перерасх'.padStart(10), 'Статус'.padStart(9),
   ].join(' ');
@@ -26,6 +26,7 @@ async function main() {
       num(c.projectPurchase).padStart(10),
       num(c.balance.incoming).padStart(10),
       num(c.balance.consumed).padStart(10),
+      num(c.closed).padStart(10),
       num(c.balance.stock).padStart(10),
       num(c.balance.unconfirmed).padStart(10),
       coeff(c.k).padStart(7),
@@ -57,6 +58,20 @@ async function main() {
           `  прогноз ${num(c.forecast.total).padStart(10)}` +
           `  перерасход ${num(c.forecast.overrunVsEstimate).padStart(9)} / ${moneyShort(c.forecast.overrunCost)}` +
           `  ${c.forecast.verdict}`,
+      );
+    }
+  }
+
+  console.log('\n=== ПО ЯРУСАМ (как лист «приходы») ===\n');
+  for (const t of report.byTier) {
+    if (t.rows.length === 0) continue;
+    console.log(`${t.tier.name}${t.tier.consumptionFromClosings ? '  [списание по процентовке]' : ''}`);
+    for (const r of t.rows) {
+      if (!(r.material.kind === 'concrete' || r.material.isAggregate)) continue;
+      console.log(
+        `    ${r.material.name.padEnd(24)} проект ${num(r.project).padStart(9)}` +
+          `  ×К ${num(r.projectWithK).padStart(9)}  приход ${num(r.incoming).padStart(9)}` +
+          `  запроц ${num(r.closed).padStart(9)}  приход−запроц ${num(r.incoming - r.closed).padStart(9)}`,
       );
     }
   }

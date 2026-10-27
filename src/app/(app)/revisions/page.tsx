@@ -29,6 +29,8 @@ export default async function RevisionsPage() {
   const materialById = new Map(materialRows.map((m) => [m.id, m]));
 
   const toEntry = (b: (typeof baselineRows)[number]): RevisionEntry | null => {
+    // База на ярус целиком (проект КЖ0 с листа «приходы») видна в разрезе ярусов.
+    if (b.structureId == null) return null;
     const s = structureById.get(b.structureId);
     const m = materialById.get(b.materialId);
     if (!s || !m) return null;

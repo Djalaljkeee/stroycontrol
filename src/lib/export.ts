@@ -1,7 +1,7 @@
 import ExcelJS from 'exceljs';
 import { asc } from 'drizzle-orm';
 import { db } from '@/db';
-import { deliveries, issues, materials, pours, structures } from '@/db/schema';
+import { closings, deliveries, issues, materials, pours, structures, tiers } from '@/db/schema';
 import { buildReport } from '@/lib/report';
 import { n } from '@/lib/format';
 
@@ -34,7 +34,7 @@ function autoWidth(sheet: ExcelJS.Worksheet, widths: number[]) {
  * привычной таблицей строка в строку, пока пилот не заменил её окончательно.
  */
 export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
-  const [report, structureRows, materialRows, pourRows, deliveryRows, issueRows] =
+  const [report, structureRows, materialRows, pourRows, deliveryRows, issueRows, tierRows, closingRows] =
     await Promise.all([
       buildReport(),
       db.select().from(structures).orderBy(asc(structures.sortOrder)),
@@ -42,6 +42,8 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
       db.select().from(pours).orderBy(asc(pours.pouredAt)),
       db.select().from(deliveries).orderBy(asc(deliveries.date)),
       db.select().from(issues).orderBy(asc(issues.date)),
+      db.select().from(tiers).orderBy(asc(tiers.sortOrder)),
+      db.select().from(closings).orderBy(asc(closings.period)),
     ]);
 
   const structureById = new Map(structureRows.map((s) => [s.id, s]));
@@ -167,12 +169,70 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
   autoWidth(poursSheet, [26, 40, 12, 12, 18, 12, 18, 20, 9, 15, 14, 16]);
   poursSheet.views = [{ state: 'frozen', ySplit: 1 }];
 
+  // ── Ярусы — тот же разрез, что лист «приходы» ───────────────────────────
+  const tierSheet = wb.addWorksheet('Ярусы');
+  styleHeader(
+    tierSheet.addRow([
+      'Ярус / конструктив', 'Позиция', 'Ед.', 'Проект', 'Выпуск КЖ', 'Проект × К', 'Приход',
+      'Приход − норма', 'Запроцентовано', 'Не запроцентовано',
+    ]),
+  );
+  const headline = (m: { kind: string; isAggregate: boolean }) => m.kind === 'concrete' || m.isAggregate;
+  for (const t of report.byTier) {
+    const groups = [
+      { label: t.tier.name, rows: t.rows, bold: true },
+      ...t.blocks.map((b) => ({ label: `   ${b.structure.name}`, rows: b.rows, bold: false })),
+    ];
+    for (const g of groups) {
+      for (const r of g.rows.filter((x) => headline(x.material))) {
+        const row = tierSheet.addRow([
+          g.label,
+          r.material.name,
+          r.material.unit,
+          r.project,
+          r.projectRevision,
+          r.projectWithK,
+          r.incoming,
+          r.projectWithK != null ? r.incoming - r.projectWithK : null,
+          r.closed,
+          r.incoming - r.closed,
+        ]);
+        if (g.bold) row.font = { bold: true };
+      }
+    }
+  }
+  [4, 6, 7, 8, 9, 10].forEach((c) => (tierSheet.getColumn(c).numFmt = '#,##0.00'));
+  autoWidth(tierSheet, [44, 26, 6, 12, 22, 12, 12, 14, 15, 17]);
+  tierSheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+  // ── Процентовка ──────────────────────────────────────────────────────────
+  const cls = wb.addWorksheet('Процентовка');
+  styleHeader(
+    cls.addRow(['Месяц', 'Конструктив', 'Материал', 'Закрыто', 'Ед.', 'Объём конструктива', 'Документ', 'Источник']),
+  );
+  for (const c of closingRows) {
+    const m = materialById.get(c.materialId);
+    cls.addRow([
+      c.period,
+      structureById.get(c.structureId)?.name ?? null,
+      m?.name ?? null,
+      n(c.quantity),
+      m?.unit ?? null,
+      c.designQuantity != null ? n(c.designQuantity) : null,
+      c.document ?? c.revision,
+      c.source === 'ks6a' ? 'импорт КС-6а' : 'ручной ввод',
+    ]);
+  }
+  autoWidth(cls, [12, 44, 26, 12, 6, 18, 24, 16]);
+  cls.views = [{ state: 'frozen', ySplit: 1 }];
+
   // ── Приходы и списания ───────────────────────────────────────────────────
   const del = wb.addWorksheet('Приходы');
   styleHeader(
-    del.addRow(['Дата', 'Материал', 'Количество', 'Ед.', 'ТТН', 'Поставщик', 'Захватка', 'Источник']),
+    del.addRow(['Дата', 'Материал', 'Количество', 'Ед.', 'ТТН', 'Поставщик', 'Куда', 'Источник']),
   );
   const pourById = new Map(pourRows.map((p) => [p.id, p]));
+  const tierById = new Map(tierRows.map((t) => [t.id, t]));
   for (const d of deliveryRows) {
     const m = materialById.get(d.materialId);
     del.addRow([
@@ -182,7 +242,15 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
       m?.unit ?? null,
       d.ttnNumber,
       d.supplier,
-      d.pourId != null ? (pourById.get(d.pourId)?.label ?? null) : m?.kind === 'concrete' ? 'не разнесён' : 'на склад',
+      d.structureId != null
+        ? (structureById.get(d.structureId)?.name ?? null)
+        : d.pourId != null
+          ? (pourById.get(d.pourId)?.label ?? null)
+          : d.tierId != null
+            ? `${tierById.get(d.tierId)?.name ?? ''}, без разбивки`
+            : m?.kind === 'concrete'
+              ? 'не разнесён'
+              : 'на склад',
       d.source === 'prihody' ? 'импорт' : 'ручной ввод',
     ]);
   }
@@ -203,7 +271,7 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
       structureById.get(i.structureId)?.name ?? null,
       i.pourId != null ? (pourById.get(i.pourId)?.label ?? null) : null,
       i.document,
-      i.source === 'ks6a' ? 'импорт КС-6а' : 'ручной ввод',
+      i.source === 'ks6a' ? 'по процентовке КС-6а' : 'ручной ввод',
     ]);
   }
   autoWidth(iss, [12, 30, 13, 6, 40, 26, 24, 16]);

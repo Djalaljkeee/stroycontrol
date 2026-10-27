@@ -43,41 +43,65 @@ describe.skipIf(!hasDb)('отчёт на данных объекта', () => {
     return c;
   };
 
-  it('приход сходится с листом «приходы»', () => {
-    expect(cell('CONCRETE_B30').balance.incoming).toBeCloseTo(2385.5, 2);
-    expect(cell('REBAR').balance.incoming).toBeCloseTo(384.91, 2);
+  const structure = (code: string) => {
+    const s = report.structures.find((x) => x.code === code);
+    if (!s) throw new Error(`Нет конструктива ${code}`);
+    return s;
+  };
+  const structureCell = (code: string, material: string) => {
+    const c = report.byStructure.get(structure(code).id)!.cells.find((x) => x.material.code === material);
+    if (!c) throw new Error(`Нет позиции ${material} у ${code}`);
+    return c;
+  };
+  const tierRow = (tier: string, material: string) => {
+    const t = report.byTier.find((x) => x.tier.code === tier);
+    if (!t) throw new Error(`Нет яруса ${tier}`);
+    return t.rows.find((r) => r.material.code === material);
+  };
+
+  it('приход сходится с листом «приходы» (с восстановленной поставкой 25.07)', () => {
+    expect(cell('CONCRETE_B30').balance.incoming).toBeCloseTo(3596.2, 2);
+    // 642,4 по листу + 102 м³ от 25.07, выпавшие из версии от 27.10.
+    expect(cell('CONCRETE_B25').balance.incoming).toBeCloseTo(744.4, 2);
+    expect(cell('REBAR').balance.incoming).toBeCloseTo(716.69, 2);
   });
 
-  it('списание бетона В30 равно закрытому объёму КС-6а', () => {
-    // 1118,2 плита + 25,41 колонны + 131,5 стены ЛК/ЛШ.
-    expect(cell('CONCRETE_B30').balance.consumed).toBeCloseTo(1275.11, 2);
+  it('весь приход разнесён на ярус или конструктив', () => {
+    expect([...report.unallocatedIncoming.values()].every((q) => Math.abs(q) < 1e-6)).toBe(true);
   });
 
-  it('неподтверждённый расход В30 — тот самый разрыв в 1110 м³', () => {
-    expect(cell('CONCRETE_B30').balance.unconfirmed).toBeCloseTo(1110.39, 2);
+  it('запроцентовано — сумма помесячных объёмов КС-6а по ДС5', () => {
+    expect(cell('CONCRETE_B30').closed).toBeCloseTo(3076.03, 2);
+    expect(cell('CONCRETE_B25').closed).toBeCloseTo(402.4, 2);
+    expect(cell('REBAR').closed).toBeCloseTo(470.83, 2);
   });
 
-  it('арматура: 205 т числится на складе без привязки к конструктивам', () => {
+  it('бетон без склада: приход минус расход может уйти в минус', () => {
+    // На ярусах КЖ0 и 1 расход считается по процентовке, а закрыто там больше,
+    // чем привезено по листу: −103 м³ В30.
+    expect(cell('CONCRETE_B30').balance.unconfirmed).toBeCloseTo(-103.03, 2);
+    expect(cell('CONCRETE_B30').balance.stock).toBe(0);
+  });
+
+  it('арматура: склад — разница прихода и расхода', () => {
     const rebar = cell('REBAR');
-    expect(rebar.balance.consumed).toBeCloseTo(179.96, 2);
-    expect(rebar.balance.stock).toBeCloseTo(204.95, 2);
-    // У арматуры есть склад, поэтому неподтверждённого расхода быть не может.
+    expect(rebar.balance.consumed).toBeCloseTo(755.55, 2);
+    expect(rebar.balance.stock).toBeCloseTo(-38.86, 2);
     expect(rebar.balance.unconfirmed).toBe(0);
   });
 
-  it('фактический коэффициент расхода бетона совпал с нормативным 1,05', () => {
+  it('прогноз не учитывает привезённое под ещё не закрытые захватки', () => {
+    // 623,2 м³ В30 разнесено на ярусы 2–3, выполнения по ним ещё нет.
+    expect(cell('CONCRETE_B30').inProgress).toBeCloseTo(623.2, 1);
     expect(cell('CONCRETE_B30').forecast.kActual).toBeCloseTo(1.05, 3);
-    expect(cell('CONCRETE_B25').forecast.kActual).toBeCloseTo(1.05, 3);
   });
 
-  it('сметный лимит переезжает вслед за сменой класса, а сумма сохраняется', () => {
-    // Плита ЛПК: 1736 м³ записаны в ресурсной как В25, по ДС3 заливаются В30.
+  it('сметный лимит делится между классами по ДС, а итог сохраняется', () => {
     expect(cell('CONCRETE_B30').estimateOriginal).toBeCloseTo(7661.4, 1);
-    expect(cell('CONCRETE_B30').estimatePurchase).toBeCloseTo(9397.4, 1);
+    expect(cell('CONCRETE_B30').estimatePurchase).toBeCloseTo(7884.21, 1);
     expect(cell('CONCRETE_B25').estimateOriginal).toBeCloseTo(2120.7, 1);
-    expect(cell('CONCRETE_B25').estimatePurchase).toBeCloseTo(384.7, 1);
+    expect(cell('CONCRETE_B25').estimatePurchase).toBeCloseTo(1897.89, 1);
 
-    // Итог по всем классам не меняется ни в одном разрезе.
     const concrete = report.totals.filter((c) => c.material.kind === 'concrete');
     const original = concrete.reduce((a, c) => a + (c.estimateOriginal ?? 0), 0);
     const effective = concrete.reduce((a, c) => a + (c.estimatePurchase ?? 0), 0);
@@ -85,37 +109,33 @@ describe.skipIf(!hasDb)('отчёт на данных объекта', () => {
     expect(effective).toBeCloseTo(10125.3, 1);
   });
 
-  it('прогноз по В30 ложится на переехавший лимит', () => {
-    const b30 = cell('CONCRETE_B30');
-    expect(b30.forecast.total).toBeCloseTo(9396.09, 1);
-    expect(b30.forecast.overrunVsEstimate!).toBeCloseTo(-1.31, 1);
+  it('ДС5 развёл стены на КЖ0 (В30) и КЖ1 (В25)', () => {
+    expect(structureCell('3.2-walls-kj0', 'CONCRETE_B30').basePurchase).toBeCloseTo(296.78, 2);
+    expect(structureCell('3.2-walls-kj1', 'CONCRETE_B25').basePurchase).toBeCloseTo(1980, 2);
+    // Конфликт класса КЖ1-01 / ДС3 по стенам на −0,080 снят.
+    expect(report.classConflicts).toHaveLength(0);
   });
 
-  it('проектная база берётся из КЖ только на своей отметке', () => {
-    const columns = report.structures.find((s) => s.code === '3.2-columns')!;
-    const level = report.structures.find((s) => s.code === '3.2-columns-L-0.080')!;
-
-    // У конструктива целиком — договорная база 854,4 м³, а не 79,44 из КЖ.
-    const parent = report.byStructure
-      .get(columns.id)!
-      .cells.find((c) => c.material.code === 'CONCRETE_B30')!;
+  it('проектная база берётся из КЖ1 изм. 8 на захватке яруса', () => {
+    const parent = structureCell('3.2-columns', 'CONCRETE_B30');
     expect(parent.base?.source).toBe('contract');
     expect(parent.basePurchase).toBeCloseTo(854.4, 1);
 
-    // На отметке — проектная база из ведомости КЖ1-01: 75,66 × 1,05.
-    const child = report.byStructure
-      .get(level.id)!
-      .cells.find((c) => c.material.code === 'CONCRETE_B30')!;
+    const child = structureCell('3.2-columns-T1', 'CONCRETE_B30');
     expect(child.base?.source).toBe('project');
-    expect(child.base?.isEstimated).toBe(false);
-    expect(child.basePurchase).toBeCloseTo(79.443, 2);
+    expect(child.base?.revision).toBe('КЖ1 изм. 8');
+    expect(child.basePurchase).toBeCloseTo(74.14 * 1.05, 3);
   });
 
-  it('конфликт класса между КЖ и ДС обнаружен и только один', () => {
-    expect(report.classConflicts).toHaveLength(1);
-    expect(report.classConflicts[0].structureCode).toBe('3.2-walls-L-0.080');
-    expect(report.classConflicts[0].projectMaterial).toContain('В25');
-    expect(report.classConflicts[0].contractMaterial).toContain('В30');
+  it('разрез по ярусам повторяет лист «приходы»', () => {
+    // КЖ0: проект с листа целиком на ярус.
+    expect(tierRow('KJ0', 'CONCRETE_B30')?.project).toBeCloseTo(2364.95, 2);
+    expect(tierRow('KJ0', 'CONCRETE_B30')?.incoming).toBeCloseTo(2339.5, 2);
+    // Ярус 2: сумма захваток изм. 8 — колонны 74,14 + плита 488,45.
+    expect(tierRow('T2', 'CONCRETE_B30')?.project).toBeCloseTo(562.59, 2);
+    expect(tierRow('T2', 'CONCRETE_B30')?.incoming).toBeCloseTo(586.3, 2);
+    // Закрыто на ярус 1 в октябре: колонны 77,85 + плита 530,87.
+    expect(tierRow('T1', 'CONCRETE_B30')?.closed).toBeCloseTo(608.72, 2);
   });
 
   it('удельное армирование плиты правдоподобно', () => {

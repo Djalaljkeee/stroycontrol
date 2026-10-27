@@ -1,16 +1,17 @@
 'use client';
 
 import { createIssue } from '@/actions/records';
-import { ActionForm, Field, Select, TextInput } from '@/components/forms';
+import { ActionForm, Field, Select, TargetSelect, TextInput } from '@/components/forms';
+import type { TargetGroup } from '@/lib/targets';
 
 export function IssueForm({
   materials,
-  structures,
+  targets,
   pours,
   structureNames,
 }: {
   materials: { id: number; name: string; isAggregate: boolean }[];
-  structures: { id: number; name: string }[];
+  targets: TargetGroup[];
   pours: { id: number; label: string; structureId: number }[];
   structureNames: { id: number; name: string }[];
 }) {
@@ -39,19 +40,10 @@ export function IssueForm({
       <Field label="Количество, т">
         <TextInput name="quantity" inputMode="decimal" placeholder="8,84" />
       </Field>
-      <Field label="Конструктив">
-        <Select name="structureId" defaultValue="">
-          <option value="" disabled>
-            Выберите конструктив
-          </option>
-          {structures.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </Select>
+      <Field label="Конструктив" hint="Захватки сгруппированы по ярусам">
+        <TargetSelect name="target" defaultValue="" groups={targets} placeholder="Выберите конструктив" />
       </Field>
-      <Field label="Захватка" hint="Необязательно: каркас часто вяжут задолго до заливки">
+      <Field label="Заливка" hint="Необязательно: каркас часто вяжут задолго до заливки">
         <Select name="pourId" defaultValue="">
           <option value="">не указывать</option>
           {pours.map((p) => (

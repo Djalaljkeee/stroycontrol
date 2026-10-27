@@ -245,16 +245,22 @@
   "2027-02-14",
   "2027-02-15"
  ],
+ "columns": {
+  "estimate": 1,
+  "project": 2,
+  "projectWithK": 3,
+  "incoming": 6,
+  "closed": 8
+ },
  "rows": [
   {
    "row": 1,
    "name": "Бетон В30",
-   "estimate": 7661.4,
-   "project": 2440.61,
-   "diffEstimateProject": 5220.789999999999,
-   "diffProjectIncoming": null,
-   "incoming": 2385.5,
-   "remainder": 5275.9,
+   "estimate": null,
+   "project": 2364.95,
+   "projectWithK": 2483.1974999999998,
+   "incoming": 2339.5,
+   "closed": 2467.31,
    "daily": [
     {
      "date": "2026-07-25",
@@ -331,26 +337,27 @@
     {
      "date": "2026-09-02",
      "quantity": 136.5
-    },
-    {
-     "date": "2026-09-06",
-     "quantity": 3.0
-    },
-    {
-     "date": "2026-09-08",
-     "quantity": 43.0
     }
    ]
   },
   {
    "row": 2,
+   "name": "Бетон В25(лестница)",
+   "estimate": null,
+   "project": 7.1,
+   "projectWithK": 7.455,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 3,
    "name": "Бетон В7,5",
    "estimate": 242.2,
    "project": 207.5,
-   "diffEstimateProject": 34.69999999999999,
-   "diffProjectIncoming": -67.5,
+   "projectWithK": 217.875,
    "incoming": 275.0,
-   "remainder": -32.80000000000001,
+   "closed": 217.87,
    "daily": [
     {
      "date": "2026-06-30",
@@ -403,94 +410,21 @@
    ]
   },
   {
-   "row": 3,
+   "row": 4,
    "name": "Бетон В15 (М3)",
    "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": null,
-   "remainder": null,
+   "project": 8.82,
+   "projectWithK": 9.261000000000001,
+   "incoming": 3.7,
+   "closed": 0.0,
    "daily": [
     {
      "date": "2026-09-05",
      "quantity": 2.0
-    }
-   ]
-  },
-  {
-   "row": 4,
-   "name": "Бетон В25 (М3)",
-   "estimate": 2120.7000000000003,
-   "project": 369.72,
-   "diffEstimateProject": 1750.9800000000002,
-   "diffProjectIncoming": null,
-   "incoming": 102.0,
-   "remainder": 2018.7000000000003,
-   "daily": [
-    {
-     "date": "2026-07-25",
-     "quantity": 102.0
-    }
-   ]
-  },
-  {
-   "row": 5,
-   "name": "Раствор М 100 (м3)",
-   "estimate": 73.433,
-   "project": 83.0,
-   "diffEstimateProject": -9.566999999999993,
-   "diffProjectIncoming": -8.5,
-   "incoming": 91.5,
-   "remainder": -18.066999999999993,
-   "daily": [
-    {
-     "date": "2026-07-10",
-     "quantity": 17.0
     },
     {
-     "date": "2026-07-11",
-     "quantity": 15.0
-    },
-    {
-     "date": "2026-07-14",
-     "quantity": 10.0
-    },
-    {
-     "date": "2026-07-18",
-     "quantity": 6.0
-    },
-    {
-     "date": "2026-07-19",
-     "quantity": 4.5
-    },
-    {
-     "date": "2026-07-21",
-     "quantity": 8.5
-    },
-    {
-     "date": "2026-07-23",
-     "quantity": 6.5
-    },
-    {
-     "date": "2026-07-24",
-     "quantity": 1.0
-    },
-    {
-     "date": "2026-08-10",
-     "quantity": 4.0
-    },
-    {
-     "date": "2026-08-13",
-     "quantity": 11.0
-    },
-    {
-     "date": "2026-08-14",
-     "quantity": 7.5
-    },
-    {
-     "date": "2026-08-27",
-     "quantity": 0.5
+     "date": "2026-09-13",
+     "quantity": 1.7
     }
    ]
   },
@@ -499,21 +433,19 @@
    "name": "Техноэласт ФИКС",
    "estimate": null,
    "project": 2075.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": -285.0,
-   "incoming": 2360.0,
-   "remainder": null,
+   "projectWithK": 2282.5,
+   "incoming": 0.0,
+   "closed": null,
    "daily": []
   },
   {
    "row": 7,
    "name": "Техноэласт ЭПП (м2)",
-   "estimate": 13442.35,
+   "estimate": null,
    "project": 3085.0,
-   "diffEstimateProject": 10357.35,
-   "diffProjectIncoming": -875.0,
+   "projectWithK": 3393.5000000000005,
    "incoming": 3960.0,
-   "remainder": 9482.35,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-06",
@@ -534,10 +466,9 @@
    "name": "XPS Carbon 100мм-м3",
    "estimate": 73.2,
    "project": 101.0,
-   "diffEstimateProject": -27.799999999999997,
-   "diffProjectIncoming": 28.730000000000004,
+   "projectWithK": null,
    "incoming": 72.27,
-   "remainder": 0.9300000000000068,
+   "closed": null,
    "daily": [
     {
      "date": "2026-08-14",
@@ -547,102 +478,57 @@
   },
   {
    "row": 9,
-   "name": "Праймер битумный (Л)",
-   "estimate": 584.45,
-   "project": null,
-   "diffEstimateProject": 584.45,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 584.45,
+   "name": "Арматура (Тн)",
+   "estimate": 1226.9,
+   "project": 303.949,
+   "projectWithK": 334.3439,
+   "incoming": 328.02,
+   "closed": 344.19,
    "daily": []
   },
   {
    "row": 10,
-   "name": "Арматура (Тн)",
-   "estimate": 1226.9,
-   "project": null,
-   "diffEstimateProject": 1226.9,
-   "diffProjectIncoming": null,
-   "incoming": 384.91,
-   "remainder": 841.99,
-   "daily": []
-  },
-  {
-   "row": 11,
-   "name": "Проволока",
-   "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": null,
-   "remainder": null,
-   "daily": [
-    {
-     "date": "2026-07-11",
-     "quantity": 1.015
-    },
-    {
-     "date": "2026-07-18",
-     "quantity": 1.01
-    }
-   ]
-  },
-  {
-   "row": 12,
    "name": "8-А240",
    "estimate": null,
-   "project": 3.541,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 4.0,
-   "remainder": -0.4590000000000001,
+   "project": 1.809,
+   "projectWithK": 1.9899,
+   "incoming": 2.1,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-28",
      "quantity": 2.1
-    },
-    {
-     "date": "2026-09-05",
-     "quantity": 1.9
     }
    ]
   },
   {
-   "row": 13,
+   "row": 11,
    "name": "8-А500",
    "estimate": null,
-   "project": 0.244,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 0.37,
+   "projectWithK": 0.40700000000000003,
    "incoming": 0.0,
-   "remainder": 0.244,
+   "closed": null,
    "daily": []
   },
   {
-   "row": 14,
+   "row": 12,
    "name": "10-А240",
    "estimate": null,
-   "project": 2.81,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 1.9,
-   "remainder": 0.9100000000000001,
-   "daily": [
-    {
-     "date": "2026-09-05",
-     "quantity": 1.9
-    }
-   ]
+   "project": 1.168,
+   "projectWithK": 1.2848,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
   },
   {
-   "row": 15,
+   "row": 13,
    "name": "10-А500",
    "estimate": null,
-   "project": 29.04,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 31.788,
-   "remainder": -2.748000000000001,
+   "project": 19.6,
+   "projectWithK": 21.560000000000002,
+   "incoming": 21.393,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-11",
@@ -655,33 +541,17 @@
     {
      "date": "2026-08-24",
      "quantity": 1.225
-    },
-    {
-     "date": "2026-09-05",
-     "quantity": 10.395
     }
    ]
   },
   {
-   "row": 16,
-   "name": "12-А240",
-   "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 0.0,
-   "daily": []
-  },
-  {
-   "row": 17,
+   "row": 14,
    "name": "12-А500",
    "estimate": null,
-   "project": 174.077,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 189.088,
-   "remainder": -15.010999999999996,
+   "project": 161.653,
+   "projectWithK": 177.8183,
+   "incoming": 175.25799999999998,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-11",
@@ -718,33 +588,27 @@
     {
      "date": "2026-08-28",
      "quantity": 19.98
-    },
-    {
-     "date": "2026-09-05",
-     "quantity": 13.83
     }
    ]
   },
   {
-   "row": 18,
+   "row": 15,
    "name": "14-А240",
    "estimate": null,
    "project": 2.14,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "projectWithK": 2.3540000000000005,
    "incoming": 0.0,
-   "remainder": 2.14,
+   "closed": null,
    "daily": []
   },
   {
-   "row": 19,
-   "name": "14-А500",
+   "row": 16,
+   "name": "14-А500 ( БК)",
    "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 2.138,
+   "projectWithK": 2.3518,
    "incoming": 2.335,
-   "remainder": -2.335,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-18",
@@ -753,14 +617,13 @@
    ]
   },
   {
-   "row": 20,
+   "row": 17,
    "name": "16-А500",
    "estimate": null,
-   "project": 3.935,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 4.575,
-   "remainder": -0.6400000000000001,
+   "project": 2.65,
+   "projectWithK": 2.915,
+   "incoming": 2.94,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-11",
@@ -773,33 +636,17 @@
     {
      "date": "2026-08-24",
      "quantity": 1.68
-    },
-    {
-     "date": "2026-09-05",
-     "quantity": 1.635
     }
    ]
   },
   {
-   "row": 21,
-   "name": "18-А500",
-   "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 0.0,
-   "daily": []
-  },
-  {
-   "row": 22,
+   "row": 18,
    "name": "20-А500",
    "estimate": null,
    "project": 7.886,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "projectWithK": 8.674600000000002,
    "incoming": 7.97,
-   "remainder": -0.08399999999999963,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-11",
@@ -808,14 +655,13 @@
    ]
   },
   {
-   "row": 23,
+   "row": 19,
    "name": "22-А500",
    "estimate": null,
    "project": 0.1,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "projectWithK": 0.11000000000000001,
    "incoming": 0.14,
-   "remainder": -0.04000000000000001,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-28",
@@ -824,14 +670,13 @@
    ]
   },
   {
-   "row": 24,
+   "row": 20,
    "name": "25-А500",
    "estimate": null,
    "project": 87.566,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "projectWithK": 96.32260000000001,
    "incoming": 91.569,
-   "remainder": -4.003,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-11",
@@ -852,25 +697,13 @@
    ]
   },
   {
-   "row": 25,
-   "name": "28-А500",
-   "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 0.0,
-   "daily": []
-  },
-  {
-   "row": 26,
+   "row": 21,
    "name": "32-А500",
    "estimate": null,
-   "project": 46.533,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 51.545,
-   "remainder": -5.0120000000000005,
+   "project": 22.086,
+   "projectWithK": 24.2946,
+   "incoming": 24.315,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-18",
@@ -879,33 +712,17 @@
     {
      "date": "2026-07-28",
      "quantity": 17.96
-    },
-    {
-     "date": "2026-09-05",
-     "quantity": 27.229999999999997
     }
    ]
   },
   {
-   "row": 27,
-   "name": "36-А500",
-   "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 0.0,
-   "daily": []
-  },
-  {
-   "row": 28,
+   "row": 22,
    "name": "Анкерные крепления БК",
    "estimate": 1.0,
    "project": null,
-   "diffEstimateProject": 1.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 1.0,
-   "remainder": 0.0,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-15",
@@ -914,14 +731,13 @@
    ]
   },
   {
-   "row": 29,
+   "row": 23,
    "name": "Сетчатое ограждение (Шт.)",
    "estimate": 62.012,
    "project": null,
-   "diffEstimateProject": 62.012,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 62.0,
-   "remainder": 0.012000000000000455,
+   "closed": null,
    "daily": [
     {
      "date": "2026-06-18",
@@ -930,25 +746,23 @@
    ]
   },
   {
-   "row": 30,
+   "row": 24,
    "name": "Газобетонный блок D500 (м3)",
    "estimate": 8.0,
    "project": null,
-   "diffEstimateProject": 8.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 0.0,
-   "remainder": 8.0,
+   "closed": null,
    "daily": []
   },
   {
-   "row": 31,
+   "row": 25,
    "name": "Пункт мойки колес",
    "estimate": 1.0,
    "project": null,
-   "diffEstimateProject": 1.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 1.0,
-   "remainder": 0.0,
+   "closed": null,
    "daily": [
     {
      "date": "2026-06-20",
@@ -957,25 +771,23 @@
    ]
   },
   {
-   "row": 32,
+   "row": 26,
    "name": "Щебень отсев (м3)",
    "estimate": 39.0,
    "project": null,
-   "diffEstimateProject": 39.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 0.0,
-   "remainder": 39.0,
+   "closed": null,
    "daily": []
   },
   {
-   "row": 33,
+   "row": 27,
    "name": "Щебень 20-40",
    "estimate": 577.8,
    "project": null,
-   "diffEstimateProject": 577.8,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 20.0,
-   "remainder": 557.8,
+   "closed": null,
    "daily": [
     {
      "date": "2026-07-18",
@@ -984,14 +796,13 @@
    ]
   },
   {
-   "row": 34,
+   "row": 28,
    "name": "Песок",
    "estimate": 6227.0,
    "project": null,
-   "diffEstimateProject": 6227.0,
-   "diffProjectIncoming": null,
-   "incoming": 202.10000000000002,
-   "remainder": 6024.9,
+   "projectWithK": null,
+   "incoming": 439.5,
+   "closed": 84.5,
    "daily": [
     {
      "date": "2026-08-26",
@@ -1012,29 +823,47 @@
     {
      "date": "2026-09-01",
      "quantity": 49.7
+    },
+    {
+     "date": "2026-09-16",
+     "quantity": 54.7
+    },
+    {
+     "date": "2026-09-18",
+     "quantity": 26.2
+    },
+    {
+     "date": "2026-09-23",
+     "quantity": 79.1
+    },
+    {
+     "date": "2026-09-24",
+     "quantity": 25.4
+    },
+    {
+     "date": "2026-09-29",
+     "quantity": 52.0
     }
    ]
   },
   {
-   "row": 35,
+   "row": 29,
    "name": "Геотекстиль 200 (м2)",
    "estimate": 2559.0,
    "project": null,
-   "diffEstimateProject": 2559.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 0.0,
-   "remainder": 2559.0,
+   "closed": null,
    "daily": []
   },
   {
-   "row": 36,
+   "row": 30,
    "name": "ПАГ14",
    "estimate": 26.0,
    "project": null,
-   "diffEstimateProject": 26.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 26.0,
-   "remainder": 0.0,
+   "closed": null,
    "daily": [
     {
      "date": "2026-06-20",
@@ -1043,14 +872,13 @@
    ]
   },
   {
-   "row": 37,
+   "row": 31,
    "name": "Пеноплекс ГЕО Т-15 толщ.100 мм (м3)",
    "estimate": 73.2,
    "project": null,
-   "diffEstimateProject": 73.2,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 73.9,
-   "remainder": -0.7000000000000028,
+   "closed": null,
    "daily": [
     {
      "date": "2026-08-14",
@@ -1059,14 +887,13 @@
    ]
   },
   {
-   "row": 38,
+   "row": 32,
    "name": "Мембрана Плантер Стандарт",
    "estimate": 767.0,
    "project": null,
-   "diffEstimateProject": 767.0,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 780.0,
-   "remainder": -13.0,
+   "closed": null,
    "daily": [
     {
      "date": "2026-08-14",
@@ -1075,114 +902,1934 @@
    ]
   },
   {
-   "row": 39,
+   "row": 33,
    "name": "Закладные детали (Тн)",
    "estimate": 0.1,
    "project": null,
-   "diffEstimateProject": 0.1,
-   "diffProjectIncoming": null,
+   "projectWithK": null,
    "incoming": 0.0,
-   "remainder": 0.1,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 34,
+   "name": "Металлоконструкции (Тн)",
+   "estimate": 60.51,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 35,
+   "name": "Сэндвич-панели 150мм (м2)",
+   "estimate": 7564.0,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 36,
+   "name": "Фасонка на сэндвич",
+   "estimate": 1891.0,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
    "daily": []
   },
   {
    "row": 40,
-   "name": "Металлоконструкции (Тн)",
-   "estimate": 60.51,
+   "name": "Опалубка новая",
+   "estimate": null,
    "project": null,
-   "diffEstimateProject": 60.51,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 60.51,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 41,
-   "name": "Сэндвич-панели 150мм (м2)",
-   "estimate": 7564.0,
-   "project": null,
-   "diffEstimateProject": 7564.0,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 7564.0,
+   "name": "Щит 3000*850",
+   "estimate": null,
+   "project": 24.0,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 42,
-   "name": "Фасонка на сэндвич",
-   "estimate": 1891.0,
-   "project": null,
-   "diffEstimateProject": 1891.0,
-   "diffProjectIncoming": null,
-   "incoming": 0.0,
-   "remainder": 1891.0,
+   "name": "Щит 3000*200",
+   "estimate": null,
+   "project": 4.0,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 43,
+   "name": "Щит 3000*1200",
+   "estimate": null,
+   "project": 240.0,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 44,
+   "name": "Щит 3000*1000",
+   "estimate": null,
+   "project": 20.0,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 45,
+   "name": "Щит 3000*550",
+   "estimate": null,
+   "project": 41.0,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 46,
-   "name": "Опалубка новая",
+   "name": "Щит 3300*500",
    "estimate": null,
-   "project": null,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 20.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 47,
-   "name": "Щит 3000*850",
+   "name": "Щит 3300*750",
    "estimate": null,
-   "project": 24.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 20.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 48,
-   "name": "Щит 3000*200",
+   "name": "Угол распалубочный 3м",
    "estimate": null,
-   "project": 2.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 36.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 49,
-   "name": "Щит 3000*1200",
+   "name": "Нулевой угол 3м",
    "estimate": null,
-   "project": 240.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 24.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 50,
-   "name": "Щит 3000*1000",
+   "name": "Подкос 6м",
    "estimate": null,
-   "project": 20.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 22.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
   },
   {
    "row": 51,
-   "name": "Щит 3000*550",
+   "name": "Замок универсальный",
    "estimate": null,
-   "project": 41.0,
-   "diffEstimateProject": null,
-   "diffProjectIncoming": null,
+   "project": 25.0,
+   "projectWithK": null,
    "incoming": null,
-   "remainder": null,
+   "closed": null,
    "daily": []
+  },
+  {
+   "row": 52,
+   "name": "КЖ0 от -3 до + 0 (Лестницы)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 53,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 7.09,
+   "projectWithK": 7.444500000000001,
+   "incoming": 7.7,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-19",
+     "quantity": 7.7
+    }
+   ]
+  },
+  {
+   "row": 54,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 1.213,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 55,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 0.04,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 56,
+   "name": "8-А500",
+   "estimate": null,
+   "project": 0.126,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 57,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 0.26,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 58,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 0.597,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 59,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 0.19,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 61,
+   "name": "КЖ1 от 0 до +5,920",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 62,
+   "name": "Бетон В30",
+   "estimate": 7661.4,
+   "project": 579.88,
+   "projectWithK": 608.874,
+   "incoming": 633.5,
+   "closed": 608.57,
+   "daily": [
+    {
+     "date": "2026-09-06",
+     "quantity": 3.0
+    },
+    {
+     "date": "2026-09-08",
+     "quantity": 47.5
+    },
+    {
+     "date": "2026-09-10",
+     "quantity": 4.2
+    },
+    {
+     "date": "2026-09-11",
+     "quantity": 5.6
+    },
+    {
+     "date": "2026-09-13",
+     "quantity": 5.6
+    },
+    {
+     "date": "2026-09-14",
+     "quantity": 5.6
+    },
+    {
+     "date": "2026-09-16",
+     "quantity": 8.5
+    },
+    {
+     "date": "2026-09-18",
+     "quantity": 8.5
+    },
+    {
+     "date": "2026-09-19",
+     "quantity": 8.5
+    },
+    {
+     "date": "2026-09-20",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-09-21",
+     "quantity": 184.0
+    },
+    {
+     "date": "2026-09-25",
+     "quantity": 175.0
+    },
+    {
+     "date": "2026-09-29",
+     "quantity": 167.5
+    }
+   ]
+  },
+  {
+   "row": 63,
+   "name": "Бетон В25 (М3)",
+   "estimate": 2120.7000000000003,
+   "project": 269.26,
+   "projectWithK": 282.723,
+   "incoming": 232.6,
+   "closed": 277.8,
+   "daily": [
+    {
+     "date": "2026-09-09",
+     "quantity": 30.6
+    },
+    {
+     "date": "2026-09-11",
+     "quantity": 24.5
+    },
+    {
+     "date": "2026-09-12",
+     "quantity": 18.0
+    },
+    {
+     "date": "2026-09-13",
+     "quantity": 27.0
+    },
+    {
+     "date": "2026-09-14",
+     "quantity": 18.0
+    },
+    {
+     "date": "2026-09-15",
+     "quantity": 23.0
+    },
+    {
+     "date": "2026-09-16",
+     "quantity": 31.5
+    },
+    {
+     "date": "2026-09-18",
+     "quantity": 35.5
+    },
+    {
+     "date": "2026-09-21",
+     "quantity": 24.5
+    }
+   ]
+  },
+  {
+   "row": 65,
+   "name": "Арматура (Тн)",
+   "estimate": 1226.9,
+   "project": 114.196,
+   "projectWithK": 125.61340000000001,
+   "incoming": 103.94900000000001,
+   "closed": 126.64,
+   "daily": []
+  },
+  {
+   "row": 66,
+   "name": "Проволока",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 67,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 1.739,
+   "projectWithK": 1.9129000000000003,
+   "incoming": 1.9,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 1.9
+    }
+   ]
+  },
+  {
+   "row": 68,
+   "name": "8-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 69,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 3.686,
+   "projectWithK": 4.054600000000001,
+   "incoming": 3.6849999999999996,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 1.9
+    },
+    {
+     "date": "2026-09-19",
+     "quantity": 1.785
+    }
+   ]
+  },
+  {
+   "row": 70,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 10.567,
+   "projectWithK": 11.623700000000001,
+   "incoming": 10.395,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 10.395
+    }
+   ]
+  },
+  {
+   "row": 71,
+   "name": "12-А240",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 72,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 67.422,
+   "projectWithK": 74.16420000000001,
+   "incoming": 56.446,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 13.83
+    },
+    {
+     "date": "2026-09-19",
+     "quantity": 9.896
+    },
+    {
+     "date": "2026-09-22",
+     "quantity": 12.53
+    },
+    {
+     "date": "2026-09-26",
+     "quantity": 20.19
+    }
+   ]
+  },
+  {
+   "row": 73,
+   "name": "14-А240",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 74,
+   "name": "14-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 75,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 4.289,
+   "projectWithK": 4.7179,
+   "incoming": 4.293,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 1.635
+    },
+    {
+     "date": "2026-09-19",
+     "quantity": 2.658
+    }
+   ]
+  },
+  {
+   "row": 76,
+   "name": "18-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 77,
+   "name": "20-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 78,
+   "name": "22-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 79,
+   "name": "25-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 80,
+   "name": "28-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 81,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 26.491,
+   "projectWithK": 29.1401,
+   "incoming": 27.23,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-05",
+     "quantity": 27.23
+    }
+   ]
+  },
+  {
+   "row": 82,
+   "name": "36-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 83,
+   "name": "КЖ1 от +0 до +5,920  (Лестница)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 84,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 53.34,
+   "projectWithK": 56.007000000000005,
+   "incoming": 5.0,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-24",
+     "quantity": 5.0
+    }
+   ]
+  },
+  {
+   "row": 85,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 8.565000000000001,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 86,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 0.42,
+   "projectWithK": 0.462,
+   "incoming": 0.42,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-19",
+     "quantity": 0.42
+    }
+   ]
+  },
+  {
+   "row": 87,
+   "name": "8-А500",
+   "estimate": null,
+   "project": 0.6,
+   "projectWithK": 0.66,
+   "incoming": 0.8,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 0.8
+    }
+   ]
+  },
+  {
+   "row": 88,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.3,
+   "projectWithK": 1.4300000000000002,
+   "incoming": 1.3,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 1.3
+    }
+   ]
+  },
+  {
+   "row": 89,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 4.21,
+   "projectWithK": 4.631,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 90,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 2.035,
+   "projectWithK": 2.2385,
+   "incoming": 2.3,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 2.3
+    }
+   ]
+  },
+  {
+   "row": 92,
+   "name": "КЖ1 от  +11,920 ( Плита)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 93,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 488.45,
+   "projectWithK": 512.8725000000001,
+   "incoming": 509.0,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-08",
+     "quantity": 183.0
+    },
+    {
+     "date": "2026-10-14",
+     "quantity": 150.0
+    },
+    {
+     "date": "2026-10-19",
+     "quantity": 176.0
+    }
+   ]
+  },
+  {
+   "row": 94,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 60.784000000000006,
+   "projectWithK": 66.86240000000001,
+   "incoming": 48.21000000000001,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 95,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 1.976,
+   "projectWithK": 2.1736,
+   "incoming": 1.98,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-19",
+     "quantity": 1.98
+    }
+   ]
+  },
+  {
+   "row": 96,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.118,
+   "projectWithK": 1.2298000000000002,
+   "incoming": 1.12,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-22",
+     "quantity": 1.12
+    }
+   ]
+  },
+  {
+   "row": 97,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 52.52,
+   "projectWithK": 57.772000000000006,
+   "incoming": 40.760000000000005,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-30",
+     "quantity": 27.3
+    },
+    {
+     "date": "2026-10-13",
+     "quantity": 13.46
+    }
+   ]
+  },
+  {
+   "row": 98,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 3.93,
+   "projectWithK": 4.323,
+   "incoming": 4.35,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-29",
+     "quantity": 4.35
+    }
+   ]
+  },
+  {
+   "row": 99,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 1.24,
+   "projectWithK": 1.364,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 100,
+   "name": "Труба 89*4 КГ",
+   "estimate": null,
+   "project": 172.0,
+   "projectWithK": 189.20000000000002,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 101,
+   "name": "Труба 108*4 КГ",
+   "estimate": null,
+   "project": 6.0,
+   "projectWithK": 6.6000000000000005,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 102,
+   "name": "КЖ1 от +5,920 до +11,920 ( Стены)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 103,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 104,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 251.78,
+   "projectWithK": 264.369,
+   "incoming": 266.2,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-29",
+     "quantity": 40.5
+    },
+    {
+     "date": "2026-10-02",
+     "quantity": 51.5
+    },
+    {
+     "date": "2026-10-04",
+     "quantity": 42.5
+    },
+    {
+     "date": "2026-10-06",
+     "quantity": 21.7
+    },
+    {
+     "date": "2026-10-07",
+     "quantity": 21.0
+    },
+    {
+     "date": "2026-10-09",
+     "quantity": 28.5
+    },
+    {
+     "date": "2026-10-12",
+     "quantity": 29.0
+    },
+    {
+     "date": "2026-10-15",
+     "quantity": 31.5
+    }
+   ]
+  },
+  {
+   "row": 105,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 33.973,
+   "projectWithK": 37.3703,
+   "incoming": 33.148,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 106,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 1.74,
+   "projectWithK": 1.9140000000000001,
+   "incoming": 1.8,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-22",
+     "quantity": 1.8
+    }
+   ]
+  },
+  {
+   "row": 107,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 7.369,
+   "projectWithK": 8.1059,
+   "incoming": 7.365,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-22",
+     "quantity": 7.365
+    }
+   ]
+  },
+  {
+   "row": 108,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 21.168,
+   "projectWithK": 23.2848,
+   "incoming": 21.163,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-29",
+     "quantity": 9.965
+    },
+    {
+     "date": "2026-09-30",
+     "quantity": 11.198
+    }
+   ]
+  },
+  {
+   "row": 109,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 2.82,
+   "projectWithK": 3.102,
+   "incoming": 2.8200000000000003,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-19",
+     "quantity": 2.2
+    },
+    {
+     "date": "2026-09-29",
+     "quantity": 0.62
+    }
+   ]
+  },
+  {
+   "row": 110,
+   "name": "КЖ1 от +5,920 до +11,920 (Колонны)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 111,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 74.14,
+   "projectWithK": 77.84700000000001,
+   "incoming": 77.3,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-25",
+     "quantity": 5.5
+    },
+    {
+     "date": "2026-09-26",
+     "quantity": 5.6
+    },
+    {
+     "date": "2026-09-27",
+     "quantity": 4.2
+    },
+    {
+     "date": "2026-09-29",
+     "quantity": 10.5
+    },
+    {
+     "date": "2026-10-02",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-10-04",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-10-06",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-10-08",
+     "quantity": 10.0
+    },
+    {
+     "date": "2026-10-11",
+     "quantity": 11.0
+    },
+    {
+     "date": "2026-10-12",
+     "quantity": 0.5
+    }
+   ]
+  },
+  {
+   "row": 112,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 27.358,
+   "projectWithK": null,
+   "incoming": 26.965000000000003,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 113,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 2.83,
+   "projectWithK": 3.1130000000000004,
+   "incoming": 2.83,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-19",
+     "quantity": 1.46
+    },
+    {
+     "date": "2026-09-29",
+     "quantity": 1.37
+    }
+   ]
+  },
+  {
+   "row": 114,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 24.533,
+   "projectWithK": 26.986300000000004,
+   "incoming": 24.135,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-22",
+     "quantity": 24.135
+    }
+   ]
+  },
+  {
+   "row": 115,
+   "name": "КЖ1 от +5,920 до +11,920 (Лестница)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 116,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 117,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 59.1,
+   "projectWithK": 62.05500000000001,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 118,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 119,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 0.42,
+   "projectWithK": 0.462,
+   "incoming": 0.42,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-19",
+     "quantity": 0.42
+    }
+   ]
+  },
+  {
+   "row": 120,
+   "name": "8-А500",
+   "estimate": null,
+   "project": 0.6,
+   "projectWithK": 0.66,
+   "incoming": 0.6,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 0.6
+    }
+   ]
+  },
+  {
+   "row": 121,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.3,
+   "projectWithK": 1.4300000000000002,
+   "incoming": 1.3,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 1.3
+    }
+   ]
+  },
+  {
+   "row": 122,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 4.26,
+   "projectWithK": 4.686,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 123,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 2.035,
+   "projectWithK": 2.2385,
+   "incoming": 2.2,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 2.2
+    }
+   ]
+  },
+  {
+   "row": 125,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 126,
+   "name": "КЖ1 +16,420 ( Плита)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 127,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 488.78,
+   "projectWithK": 513.2189999999999,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 128,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 129,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 1.976,
+   "projectWithK": 2.1736,
+   "incoming": 1.976,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-29",
+     "quantity": 0.79
+    },
+    {
+     "date": "2026-10-14",
+     "quantity": 1.186
+    }
+   ]
+  },
+  {
+   "row": 130,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.118,
+   "projectWithK": 1.2298000000000002,
+   "incoming": 1.03,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-22",
+     "quantity": 1.03
+    }
+   ]
+  },
+  {
+   "row": 131,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 52.61,
+   "projectWithK": 57.871,
+   "incoming": 52.61,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 20.89
+    },
+    {
+     "date": "2026-10-14",
+     "quantity": 20.91
+    },
+    {
+     "date": "2026-10-17",
+     "quantity": 10.81
+    }
+   ]
+  },
+  {
+   "row": 132,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 3.87,
+   "projectWithK": 4.257000000000001,
+   "incoming": 3.87,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-14",
+     "quantity": 3.87
+    }
+   ]
+  },
+  {
+   "row": 133,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 1.24,
+   "projectWithK": 1.364,
+   "incoming": 1.24,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 1.24
+    }
+   ]
+  },
+  {
+   "row": 134,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 135,
+   "name": "КЖ1 от +11,920 до +16,420 ( Стены)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 136,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 188.94,
+   "projectWithK": 198.387,
+   "incoming": 130.9,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-18",
+     "quantity": 32.0
+    },
+    {
+     "date": "2026-10-20",
+     "quantity": 29.0
+    },
+    {
+     "date": "2026-10-21",
+     "quantity": 18.7
+    },
+    {
+     "date": "2026-10-23",
+     "quantity": 22.0
+    },
+    {
+     "date": "2026-10-26",
+     "quantity": 29.2
+    }
+   ]
+  },
+  {
+   "row": 137,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 138,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 1.2,
+   "projectWithK": 1.32,
+   "incoming": 1.2,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-14",
+     "quantity": 1.2
+    }
+   ]
+  },
+  {
+   "row": 139,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 4.569,
+   "projectWithK": 5.0259,
+   "incoming": 4.569,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-14",
+     "quantity": 4.569
+    }
+   ]
+  },
+  {
+   "row": 140,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 16.0,
+   "projectWithK": 17.6,
+   "incoming": 16.0,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-16",
+     "quantity": 16.0
+    }
+   ]
+  },
+  {
+   "row": 141,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 0.96,
+   "projectWithK": 1.056,
+   "incoming": 1.14,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-14",
+     "quantity": 1.14
+    }
+   ]
+  },
+  {
+   "row": 142,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 143,
+   "name": "КЖ1 от +11,920 до +16,420 ( Колонны)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 144,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 56.78,
+   "projectWithK": 59.61900000000001,
+   "incoming": 36.9,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-12",
+     "quantity": 2.0
+    },
+    {
+     "date": "2026-10-14",
+     "quantity": 7.0
+    },
+    {
+     "date": "2026-10-16",
+     "quantity": 6.5
+    },
+    {
+     "date": "2026-10-20",
+     "quantity": 7.0
+    },
+    {
+     "date": "2026-10-23",
+     "quantity": 7.2
+    },
+    {
+     "date": "2026-10-26",
+     "quantity": 7.2
+    }
+   ]
+  },
+  {
+   "row": 145,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 17.283,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 146,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 2.12,
+   "projectWithK": 2.3320000000000003,
+   "incoming": 2.82,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-29",
+     "quantity": 2.82
+    }
+   ]
+  },
+  {
+   "row": 147,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 15.163,
+   "projectWithK": 16.6793,
+   "incoming": 25.148,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-09-25",
+     "quantity": 25.148
+    }
+   ]
+  },
+  {
+   "row": 148,
+   "name": "КЖ1 от +11,920 до +16,420  (Лестница)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 149,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 150,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 59.1,
+   "projectWithK": 62.05500000000001,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 151,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 152,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 0.42,
+   "projectWithK": 0.462,
+   "incoming": 0.42,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-19",
+     "quantity": 0.42
+    }
+   ]
+  },
+  {
+   "row": 153,
+   "name": "8-А500",
+   "estimate": null,
+   "project": 0.6,
+   "projectWithK": 0.66,
+   "incoming": 0.6,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 0.6
+    }
+   ]
+  },
+  {
+   "row": 154,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.3,
+   "projectWithK": 1.4300000000000002,
+   "incoming": 1.41,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 1.41
+    }
+   ]
+  },
+  {
+   "row": 155,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 4.26,
+   "projectWithK": 4.686,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 156,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 2.035,
+   "projectWithK": 2.2385,
+   "incoming": 0.0,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 158,
+   "name": "КЖ1 +22,420 ( Плита)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 159,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 492.11,
+   "projectWithK": 516.7155,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 160,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 161,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 1.976,
+   "projectWithK": 2.1736,
+   "incoming": 1.99,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 1.99
+    }
+   ]
+  },
+  {
+   "row": 162,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 1.118,
+   "projectWithK": 1.2298000000000002,
+   "incoming": 0.99,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 0.99
+    }
+   ]
+  },
+  {
+   "row": 163,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 52.92,
+   "projectWithK": 58.212,
+   "incoming": 3.43,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-17",
+     "quantity": 3.43
+    }
+   ]
+  },
+  {
+   "row": 164,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 3.8,
+   "projectWithK": 4.18,
+   "incoming": 3.8,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-17",
+     "quantity": 3.8
+    }
+   ]
+  },
+  {
+   "row": 165,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 1.24,
+   "projectWithK": 1.364,
+   "incoming": 1.24,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-27",
+     "quantity": 1.24
+    }
+   ]
+  },
+  {
+   "row": 166,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 167,
+   "name": "КЖ1 с +16,420 до +22,420 ( Стены)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 168,
+   "name": "Бетон В25 (М3)",
+   "estimate": null,
+   "project": 253.98,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 169,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 170,
+   "name": "8-А240",
+   "estimate": null,
+   "project": 1.2,
+   "projectWithK": 1.32,
+   "incoming": 1.54,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 2.8
+    }
+   ]
+  },
+  {
+   "row": 171,
+   "name": "10-А500",
+   "estimate": null,
+   "project": 4.569,
+   "projectWithK": 5.0259,
+   "incoming": 4.569,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 4.569
+    }
+   ]
+  },
+  {
+   "row": 172,
+   "name": "12-А500",
+   "estimate": null,
+   "project": 16.0,
+   "projectWithK": 17.6,
+   "incoming": 4.74,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-16",
+     "quantity": 4.74
+    }
+   ]
+  },
+  {
+   "row": 173,
+   "name": "16-А500",
+   "estimate": null,
+   "project": 0.96,
+   "projectWithK": 1.056,
+   "incoming": 1.19,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-17",
+     "quantity": 1.19
+    }
+   ]
+  },
+  {
+   "row": 174,
+   "name": "32-А500",
+   "estimate": null,
+   "project": null,
+   "projectWithK": 0.0,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 175,
+   "name": "Наименование",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 176,
+   "name": "КЖ1 с +16,420 до +22,420 ( Колонны)",
+   "estimate": null,
+   "project": null,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 177,
+   "name": "Бетон В30",
+   "estimate": null,
+   "project": 74.14,
+   "projectWithK": 77.84700000000001,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 178,
+   "name": "Арматура (Тн)",
+   "estimate": null,
+   "project": 27.353,
+   "projectWithK": null,
+   "incoming": null,
+   "closed": null,
+   "daily": []
+  },
+  {
+   "row": 179,
+   "name": "10-А240",
+   "estimate": null,
+   "project": 2.82,
+   "projectWithK": 3.102,
+   "incoming": 2.82,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-13",
+     "quantity": 2.82
+    }
+   ]
+  },
+  {
+   "row": 180,
+   "name": "32-А500",
+   "estimate": null,
+   "project": 24.533,
+   "projectWithK": 26.986300000000004,
+   "incoming": 25.454,
+   "closed": null,
+   "daily": [
+    {
+     "date": "2026-10-26",
+     "quantity": 18.549
+    },
+    {
+     "date": "2026-10-27",
+     "quantity": 6.905
+    }
+   ]
   }
  ]
 }

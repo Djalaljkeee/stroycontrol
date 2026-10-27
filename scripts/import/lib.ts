@@ -36,19 +36,38 @@ export interface DeliveryRow {
   name: string;
   estimate: number | null;
   project: number | null;
+  projectWithK: number | null;
+  /** Колонка «Приход» — по формуле листа сумма дневных значений строки. */
   incoming: number | null;
-  remainder: number | null;
+  /** Колонка «Запроцентовано». */
+  closed: number | null;
   daily: { date: string; quantity: number }[];
 }
+
+export interface TierSpec {
+  code: string;
+  name: string;
+  stage: string;
+  levelFrom: string | null;
+  levelTo: string | null;
+  consumptionFromClosings?: boolean;
+}
+
+/** Куда ложится приход блока листа «приходы»: на захватку или на ярус целиком. */
+export type DeliveryTarget = { structure: string } | { tier: string } | null;
 
 export interface Mapping {
   object: { code: string; name: string; kind: string };
   sections: { code: string; name: string; parent: string }[];
+  tiers: TierSpec[];
   structures: {
     code: string;
     parent: string;
     name: string;
     kind: string;
+    tier?: string;
+    /** Редакции ДС, в которых строка существует; без поля — во всех. */
+    revisions?: string[];
     workCodes: string[];
     supply: {
       material: string;
@@ -59,13 +78,28 @@ export interface Mapping {
       materialByRevision?: Record<string, string>;
     }[];
     workCodesResource?: string[];
-    levels?: string[];
+    /** Захватки по ярусам для строк КС-6а на несколько этажей. */
+    blocks?: { code: string; tier: string; name: string; level?: string }[];
+    /** Месяц КС-6а (последний день) → захватка, на которую ложится закрытый объём. */
+    closingBlocks?: Record<string, string>;
     note?: string | string[];
   }[];
   materials: {
-    concrete: { code: string; name: string; class: string; deliveryRow: string }[];
+    concrete: { code: string; name: string; class: string; deliveryRow: string; aliases?: string[] }[];
     rebarAggregate: { code: string; name: string; deliveryRow: string };
-    rebarSkus: { code: string; diameter: number; class: string; deliveryRow: string }[];
+    rebarSkus: {
+      code: string;
+      diameter: number;
+      class: string;
+      deliveryRow: string;
+      aliases?: string[];
+    }[];
+  };
+  deliveryBlocks: {
+    initial: DeliveryTarget;
+    headers: { header: string; target: DeliveryTarget }[];
+    /** Поставки, которых в листе нет, но которые подтверждены прошлой версией листа или КС-6а. */
+    corrections?: { date: string; material: string; quantity: number; target: DeliveryTarget; note: string }[];
   };
   revisions: {
     sheets: { sheet: string; revision: string; effectiveFrom: string; factThrough: string }[];
@@ -77,12 +111,10 @@ export interface KjSheets {
   sheets: {
     revision: string;
     issuedAt: string;
+    /** База на ярус целиком, когда проект не разложен по конструктивам (м3 / т). */
+    tierLevel?: { tier: string; material: string; design: number }[];
     concrete: {
       structureCode: string;
-      parent: string;
-      name: string;
-      kind: string;
-      level: string;
       material: string;
       designM3: number;
     }[];
@@ -134,6 +166,28 @@ export function splitFactAndPlan(
     else plan += m.volume;
   }
   return { fact, plan };
+}
+
+/**
+ * Строка КС-6а по ссылке из mapping.json. Обычно ссылка — просто код ('3.2.8.'),
+ * но в ДС5 коды стен повторяются для КЖ0 и КЖ1, и тогда к коду добавляется
+ * фрагмент наименования: '3.2.8.#КЖ1'. Неоднозначная ссылка — ошибка маппинга,
+ * а не повод взять первую попавшуюся строку.
+ */
+export function findKs6aRow(rows: Ks6aRow[], ref: string): Ks6aRow | null {
+  const [code, marker] = ref.split('#');
+  const matches = rows.filter(
+    (r) => r.code?.trim() === code && (marker == null || r.name.includes(marker)),
+  );
+  if (matches.length > 1) {
+    throw new Error(`Строка КС-6а «${ref}» неоднозначна: ${matches.length} совпадения, уточните метку`);
+  }
+  return matches[0] ?? null;
+}
+
+/** Наименования на листе «приходы» пишутся с лишними пробелами: «КЖ1 от  +11,920 ( Плита)». */
+export function normalizeName(name: string): string {
+  return name.replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').trim();
 }
 
 export function round(value: number, digits = 4): number {

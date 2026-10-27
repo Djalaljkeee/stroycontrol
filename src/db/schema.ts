@@ -91,6 +91,32 @@ export const materials = pgTable('materials', {
 ]);
 
 /**
+ * Ярус — горизонтальный срез здания между двумя отметками. Второе измерение
+ * к дереву конструктивов: КС-6а закрывает работы по видам (колонны всех этажей
+ * одной строкой 3.2.1), а площадка живёт ярусами — привозят бетон и арматуру
+ * «на стены +5,920…+11,920». Лист «приходы» разнесён именно так.
+ *
+ * Ярус КЖ0 — вся подземная часть и фундамент БК: там приход исторически
+ * разнесён только на этап целиком, без разбивки по конструктивам.
+ *
+ * `consumptionFromClosings` — приход яруса не разнесён по конструктивам, поэтому
+ * списание его конструктивов берётся по процентовке (КЖ0 и ярус 1 на момент
+ * перехода). С яруса 2 приход разносится по конструктивам, и списанием служит
+ * сама разноска.
+ */
+export const tiers = pgTable('tiers', {
+  id: serial('id').primaryKey(),
+  code: text('code').notNull(),
+  name: text('name').notNull(),
+  /** 'КЖ0' | 'КЖ1' — комплект рабочей документации. */
+  stage: text('stage').notNull(),
+  levelFrom: text('level_from'),
+  levelTo: text('level_to'),
+  consumptionFromClosings: boolean('consumption_from_closings').notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(0),
+}, (t) => [uniqueIndex('tiers_code_key').on(t.code)]);
+
+/**
  * Конструктив. Самоссылочное дерево:
  *   Объект → Раздел (3.1 Фундаментная плита ЛПК) → Конструктив (плита осн.) → Захватка.
  *
@@ -109,10 +135,14 @@ export const structures = pgTable('structures', {
   /** Отметка, например '-0,080' или '+5,900'. */
   level: text('level'),
   estimateShare: ratio('estimate_share'),
+  /** Ярус, к которому относится конструктив целиком. У строк КС-6а на все этажи
+   *  (колонны, перекрытия) пусто — ярус есть у их дочерних захваток. */
+  tierId: integer('tier_id').references(() => tiers.id, { onDelete: 'set null' }),
   sortOrder: integer('sort_order').notNull().default(0),
 }, (t) => [
   uniqueIndex('structures_code_key').on(t.code),
   index('structures_parent_idx').on(t.parentId),
+  index('structures_tier_idx').on(t.tierId),
 ]);
 
 /**
@@ -174,7 +204,10 @@ export const prices = pgTable('prices', {
  */
 export const baselines = pgTable('baselines', {
   id: serial('id').primaryKey(),
-  structureId: integer('structure_id').notNull().references(() => structures.id, { onDelete: 'cascade' }),
+  /** Пусто у базы на ярус целиком: проект КЖ0 на листе «приходы» не разложен
+   *  по конструктивам. Такие строки видны только в разрезе ярусов. */
+  structureId: integer('structure_id').references(() => structures.id, { onDelete: 'cascade' }),
+  tierId: integer('tier_id').references(() => tiers.id, { onDelete: 'cascade' }),
   materialId: integer('material_id').notNull().references(() => materials.id, { onDelete: 'cascade' }),
   source: text('source').notNull(),
   revision: text('revision').notNull(),
@@ -184,7 +217,11 @@ export const baselines = pgTable('baselines', {
   note: text('note'),
 }, (t) => [
   uniqueIndex('baselines_key').on(t.structureId, t.materialId, t.source, t.revision),
+  uniqueIndex('baselines_tier_key')
+    .on(t.tierId, t.materialId, t.source, t.revision)
+    .where(sql`${t.structureId} is null`),
   check('baselines_source_check', sql`${t.source} in ('estimate','contract','project')`),
+  check('baselines_target_check', sql`${t.structureId} is not null or ${t.tierId} is not null`),
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -217,21 +254,27 @@ export const pours = pgTable('pours', {
 ]);
 
 /**
- * Приход материала.
+ * Приход материала и его разнесение.
  *
- * Бетон склада не имеет — он уходит сразу в дело, поэтому для бетона приход
- * с заполненным `pourId` одновременно является и списанием. Приход бетона без
- * `pourId` — это ровно тот неподтверждённый расход, который надо разнести:
- * на импорте таких набирается ~1110 м3 В30, и они помечаются `needsAllocation`.
+ * Разнести приход можно на трёх уровнях точности:
+ *   - `structureId` — на конструктив яруса («стены +5,920…+11,920»). Это и есть
+ *     списание: бетон не складируется, а арматура, привезённая под захватку,
+ *     идёт в неё же — ровно так ведётся лист «приходы»;
+ *   - `pourId` — на конкретную захватку; конструктив берётся из неё;
+ *   - только `tierId` — на ярус целиком, без разбивки (история КЖ0 и яруса 1).
+ *     Такой приход считается разнесённым, но списанием не является: списание
+ *     конструктивов этих ярусов идёт по процентовке.
  *
- * Арматура приходит на склад, поэтому у неё `pourId` всегда пуст, а списание
- * оформляется отдельно в `issues`.
+ * Бетон без разнесения — неподтверждённый расход (`needsAllocation`).
+ * Арматура без разнесения лежит на складе и списывается актом монтажа (`issues`).
  */
 export const deliveries = pgTable('deliveries', {
   id: serial('id').primaryKey(),
   date: date('date').notNull(),
   materialId: integer('material_id').notNull().references(() => materials.id, { onDelete: 'restrict' }),
   quantity: qty('quantity').notNull(),
+  structureId: integer('structure_id').references(() => structures.id, { onDelete: 'restrict' }),
+  tierId: integer('tier_id').references(() => tiers.id, { onDelete: 'restrict' }),
   pourId: integer('pour_id').references(() => pours.id, { onDelete: 'set null' }),
   ttnNumber: text('ttn_number'),
   supplier: text('supplier'),
@@ -245,19 +288,21 @@ export const deliveries = pgTable('deliveries', {
 }, (t) => [
   index('deliveries_material_date_idx').on(t.materialId, t.date),
   index('deliveries_pour_idx').on(t.pourId),
+  index('deliveries_structure_idx').on(t.structureId),
+  index('deliveries_tier_idx').on(t.tierId),
 ]);
 
 /**
  * Списание материала на конструктив.
  *
- * Основной случай — арматура: акт монтажа списывает тоннаж со склада на
+ * Основной случай — арматура со склада: акт монтажа списывает тоннаж на
  * конструктив либо на захватку (каркас часто вяжется задолго до заливки).
  *
- * Второй случай — закрытые объёмы бетона из КС-6а (`source = 'ks6a'`). До
- * внедрения пилота привязки ТТН к захваткам не существовало, и единственная
- * запись о списанном бетоне — помесячные объёмы в журнале. Импорт создаёт такую
- * запись только там, где за этот месяц у конструктива нет привязанных ТТН,
- * поэтому двойного учёта не возникает.
+ * Второй случай — списание по процентовке (`source = 'ks6a'`) в ярусах, где приход
+ * разнесён только на ярус целиком (`tiers.consumptionFromClosings`). Там нет
+ * другой записи о том, сколько ушло в конкретный конструктив, и импорт копирует
+ * закрытый объём из `closings`. В остальных ярусах списанием служит разноска
+ * прихода, и такие записи не создаются — двойного учёта нет.
  */
 export const issues = pgTable('issues', {
   id: serial('id').primaryKey(),
@@ -274,6 +319,38 @@ export const issues = pgTable('issues', {
 }, (t) => [
   index('issues_material_date_idx').on(t.materialId, t.date),
   index('issues_structure_idx').on(t.structureId),
+]);
+
+/**
+ * Процентовка — объём, закрытый перед заказчиком по журналу КС-6а за месяц.
+ *
+ * Это не списание: «запроцентовано» отвечает на вопрос «сколько нам оплатят»,
+ * а приход и списание — «сколько привезли и куда ушло». Разница между ними
+ * («приход − запроцентовано») — главный контроль листа «приходы»: привезённое,
+ * но ещё не закрытое, либо закрытое без подтверждения приходом.
+ *
+ * `quantity` — в единицах строки поставки КС-6а (м3 закупки, т арматуры);
+ * `designQuantity` — конструктивный объём по строке работ того же месяца, по нему
+ * считается выполнение. Пишется на захватку яруса, если её удаётся определить,
+ * иначе на конструктив.
+ */
+export const closings = pgTable('closings', {
+  id: serial('id').primaryKey(),
+  /** Последний день закрываемого месяца. */
+  period: date('period').notNull(),
+  structureId: integer('structure_id').notNull().references(() => structures.id, { onDelete: 'restrict' }),
+  materialId: integer('material_id').notNull().references(() => materials.id, { onDelete: 'restrict' }),
+  quantity: qty('quantity').notNull(),
+  designQuantity: qty('design_quantity'),
+  revision: text('revision'),
+  document: text('document'),
+  source: text('source').notNull().default('manual'),
+  note: text('note'),
+  createdBy: integer('created_by').references(() => users.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index('closings_structure_idx').on(t.structureId),
+  index('closings_period_idx').on(t.period),
 ]);
 
 /** Кто и что менял — на пилоте данные вводят несколько человек. */

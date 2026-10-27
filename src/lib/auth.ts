@@ -118,6 +118,8 @@ export const WRITE_ACCESS: Record<string, Role[]> = {
   pours: ['foreman', 'estimator'],
   deliveries: ['supply', 'foreman', 'estimator'],
   issues: ['foreman', 'estimator'],
+  // Процентовку закрывает сметчик: это объёмы, предъявленные заказчику по КС-6а.
+  closings: ['estimator'],
   baselines: ['estimator'],
 };
 
