@@ -3,7 +3,7 @@ import { db } from '@/db';
 import { issues, materials, pours, structures } from '@/db/schema';
 import { buildReport } from '@/lib/report';
 import { date, n, num } from '@/lib/format';
-import { canWrite, currentUser } from '@/lib/auth';
+import { canWrite, requirePage } from '@/lib/auth';
 import { loadTargetGroups } from '@/lib/targets';
 import { isImplausible } from '@/domain';
 import { Card, Empty } from '@/components/ui';
@@ -16,7 +16,7 @@ export const metadata = { title: 'Списания арматуры — Стро
 const PAGE_SIZE = 60;
 
 export default async function IssuesPage() {
-  const user = await currentUser();
+  const user = await requirePage('issues');
   const [report, materialRows, structureRows, pourRows, rows, targetGroups] = await Promise.all([
     buildReport(),
     db.select().from(materials).where(eq(materials.kind, 'rebar')).orderBy(materials.id),

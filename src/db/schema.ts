@@ -29,17 +29,35 @@ const ratio = (name: string) => numeric(name, { precision: 6, scale: 4 });
 
 /** foreman — прораб (заливки, списания), supply — снабжение (приходы),
  *  estimator — сметчик (базы сравнения, редакции), viewer — только чтение. */
+/**
+ * Роль — набор прав, который собирает администратор: какие разделы видны,
+ * в какие можно вносить данные и какой экран открывается после входа.
+ * Встроенные роли (`isSystem`) переименовывать и настраивать можно, удалять — нет.
+ */
+export const roles = pgTable('roles', {
+  code: text('code').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  /** Разделы, которые роль видит (ключи SECTIONS из src/lib/access.ts). */
+  viewSections: text('view_sections').array().notNull().default(sql`'{}'::text[]`),
+  /** Разделы, в которые роль вносит данные. */
+  writeSections: text('write_sections').array().notNull().default(sql`'{}'::text[]`),
+  /** Раздел, который открывается после входа. */
+  home: text('home').notNull(),
+  isSystem: boolean('is_system').notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(100),
+});
+
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   login: text('login').notNull(),
   name: text('name').notNull(),
-  role: text('role').notNull(),
+  role: text('role').notNull().references(() => roles.code, { onDelete: 'restrict', onUpdate: 'cascade' }),
   passwordHash: text('password_hash').notNull(),
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   uniqueIndex('users_login_key').on(t.login),
-  check('users_role_check', sql`${t.role} in ('foreman','supply','estimator','viewer')`),
 ]);
 
 /** Непрозрачный серверный токен сессии. Хранится хэш токена, а не сам токен:

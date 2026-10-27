@@ -1,6 +1,8 @@
 /**
  * Создаёт учётные записи пилота. Пароль общий на все учётки и берётся из
- * SEED_PASSWORD — предполагается, что после первого входа его меняют.
+ * SEED_PASSWORD — предполагается, что после первого входа его меняют. Пароль
+ * существующих учёток повторный запуск не трогает. Остальные учётки — по людям —
+ * заводит администратор на странице «Учётные записи».
  */
 import './env';
 import bcrypt from 'bcryptjs';
@@ -8,6 +10,8 @@ import { db, sql } from '../src/db';
 import { users } from '../src/db/schema';
 
 const PILOT_USERS = [
+  { login: 'admin', name: 'Администратор', role: 'admin' },
+  { login: 'manager', name: 'Руководитель проекта', role: 'manager' },
   { login: 'foreman', name: 'Прораб участка', role: 'foreman' },
   { login: 'supply', name: 'Снабжение', role: 'supply' },
   { login: 'estimator', name: 'Инженер-сметчик', role: 'estimator' },
@@ -23,7 +27,7 @@ async function main() {
     await db
       .insert(users)
       .values({ ...u, passwordHash })
-      .onConflictDoUpdate({ target: users.login, set: { name: u.name, role: u.role } });
+      .onConflictDoNothing({ target: users.login });
     console.log(`  ${u.login.padEnd(10)} ${u.name} (${u.role})`);
   }
 

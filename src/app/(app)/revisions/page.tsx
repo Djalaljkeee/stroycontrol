@@ -4,6 +4,7 @@ import { diffRevisions, SOURCE_LABELS, type RevisionEntry } from '@/domain';
 import { nOrNull, num, signed } from '@/lib/format';
 import { buildReport } from '@/lib/report';
 import { Card, Empty } from '@/components/ui';
+import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 export default async function RevisionsPage() {
+  await requirePage('revisions');
   const [report, baselineRows, structureRows, materialRows] = await Promise.all([
     buildReport(),
     db.select().from(baselines),

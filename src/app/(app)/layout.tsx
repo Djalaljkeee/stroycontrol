@@ -1,33 +1,26 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { currentUser, ROLE_LABELS } from '@/lib/auth';
+import { canView, currentUser } from '@/lib/auth';
+import { SECTIONS } from '@/lib/access';
 import { logout } from '@/actions/auth';
 
-const NAV = [
-  { href: '/dashboard', label: 'Дашборд' },
-  { href: '/balance', label: 'Остатки' },
-  { href: '/tiers', label: 'Ярусы' },
-  { href: '/structures', label: 'Конструктивы' },
-  { href: '/pours', label: 'Заливки' },
-  { href: '/deliveries', label: 'Приходы' },
-  { href: '/issues', label: 'Списания' },
-  { href: '/closings', label: 'Процентовка' },
-  { href: '/revisions', label: 'Редакции' },
-];
+// Выгрузка — кнопка справа, а не пункт меню.
+const NAV = SECTIONS.filter((s) => s.key !== 'export');
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
   if (!user) redirect('/login');
+  const nav = NAV.filter((item) => canView(user, item.key));
 
   return (
     <div className="min-h-screen">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-5 py-2.5">
-          <Link href="/dashboard" className="text-sm font-semibold text-slate-900">
+          <Link href={user.home} className="text-sm font-semibold text-slate-900">
             СтройКонтроль
           </Link>
           <nav className="flex flex-1 flex-wrap gap-1">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -37,16 +30,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               </Link>
             ))}
           </nav>
-          <a
-            href="/api/export"
-            className="rounded border border-slate-300 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-50"
-          >
-            Выгрузить в Excel
-          </a>
+          {canView(user, 'export') ? (
+            <a
+              href="/api/export"
+              className="rounded border border-slate-300 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              Выгрузить в Excel
+            </a>
+          ) : null}
           <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span>
-              {user.name} · {ROLE_LABELS[user.role]}
-            </span>
+            <Link href="/account" className="hover:text-slate-900" title="Сменить пароль">
+              {user.name} · {user.roleName}
+            </Link>
             <form action={logout}>
               <button type="submit" className="text-slate-500 underline hover:text-slate-900">
                 Выйти

@@ -3,19 +3,23 @@ import { db } from '@/db';
 import { deliveries, issues, materials, pours, structures } from '@/db/schema';
 import { buildReport } from '@/lib/report';
 import { coeff, date, n, num } from '@/lib/format';
-import { canWrite, currentUser } from '@/lib/auth';
+import { canWrite, requirePage } from '@/lib/auth';
 import { K_CONCRETE } from '@/domain';
 import { Card, Empty, VerdictBadge } from '@/components/ui';
 import { PourForm } from './form';
+import { CompleteForm } from './complete';
+import { loadTargetGroups } from '@/lib/targets';
+import { buildProtection } from '@/lib/protection';
+import { ProtectionTable } from '@/components/protection';
 import { StatusControl } from './status';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Журнал заливок — СтройКонтроль' };
+export const metadata = { title: 'Выполнение — СтройКонтроль' };
 
 export default async function PoursPage() {
-  const user = await currentUser();
-  const [report, structureRows, concreteMaterials, pourRows, deliveryRows, issueRows] =
+  const user = await requirePage('pours');
+  const [report, structureRows, concreteMaterials, pourRows, deliveryRows, issueRows, targetGroups, protection] =
     await Promise.all([
       buildReport(),
       db.select().from(structures).orderBy(structures.sortOrder),
@@ -23,7 +27,11 @@ export default async function PoursPage() {
       db.select().from(pours).orderBy(desc(pours.pouredAt), desc(pours.id)),
       db.select().from(deliveries),
       db.select().from(issues),
+      loadTargetGroups({ includeTiers: false }),
+      buildProtection(),
     ]);
+  // Прорабу — то, что сейчас в работе или ждёт закрытия: под это готовится исполнительная.
+  const active = protection.rows.filter((r) => r.status !== 'closed' && r.status !== 'not_started');
 
   const structureName = new Map(structureRows.map((s) => [s.id, s]));
   const materialName = new Map(concreteMaterials.map((m) => [m.id, m]));
@@ -51,7 +59,11 @@ export default async function PoursPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Журнал заливок</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Выполнение</h1>
+        <p className="mt-1 max-w-4xl text-sm text-slate-600">
+          Когда конструктив забетонирован, отметьте выполнение — с этой даты объём ждёт защиты в
+          процентовке, и руководитель видит, что закрыть.
+        </p>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
           Захватка — единица учёта: залили такой-то объём такой-то конструкции. Проектный объём
           захватки, умноженный на {coeff(K_CONCRETE)}, — это норма; всё, что принято по ТТН сверх
@@ -60,14 +72,32 @@ export default async function PoursPage() {
       </div>
 
       {canWrite(user, 'pours') ? (
-        <Card title="Новая захватка">
+        <Card title="Отметить выполнение конструктива">
+          <CompleteForm targets={targetGroups} materials={concreteMaterials} />
+        </Card>
+      ) : null}
+
+      <Card title="В работе и ждёт защиты">
+        {active.length === 0 ? (
+          <Empty>Нет конструктивов в работе: всё выполненное закрыто.</Empty>
+        ) : (
+          <div className="overflow-x-auto">
+            <ProtectionTable rows={active} showMoney={false} />
+          </div>
+        )}
+      </Card>
+
+      {canWrite(user, 'pours') ? (
+        <Card
+          title="Новая захватка вручную"
+          hint="Для частичной заливки с отдельным номером и статусом «запланирована / в работе»."
+        >
           <PourForm structures={pourTargets} materials={concreteMaterials} />
         </Card>
       ) : null}
 
       <Card
-        title="Захватки"
-        hint="Строки «КС-6а» — свёртка журнала выполненных работ за месяц, загруженная при импорте. Реальные захватки заводятся вручную."
+        title="Журнал заливок"
       >
         {pourRows.length === 0 ? (
           <Empty>Захваток пока нет.</Empty>

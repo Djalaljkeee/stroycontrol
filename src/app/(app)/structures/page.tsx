@@ -2,12 +2,14 @@ import { Fragment } from 'react';
 import { buildReport } from '@/lib/report';
 import { coeff, money, num, percent, signed } from '@/lib/format';
 import { BasisBadge, Card, VerdictBadge } from '@/components/ui';
+import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Конструктивы — СтройКонтроль' };
 
 export default async function StructuresPage() {
+  await requirePage('structures');
   const report = await buildReport();
 
   return (

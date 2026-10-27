@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { baselines, closings, materials, structures } from '@/db/schema';
 import { date, n, num, signed } from '@/lib/format';
-import { canWrite, currentUser } from '@/lib/auth';
+import { canWrite, requirePage } from '@/lib/auth';
 import { loadTargetGroups } from '@/lib/targets';
 import { Card, Empty } from '@/components/ui';
 import { ClosingForm } from './form';
@@ -17,7 +17,7 @@ const monthLabel = (period: string) =>
   new Date(`${period}T00:00:00Z`).toLocaleDateString('ru-RU', { month: 'short', year: '2-digit', timeZone: 'UTC' });
 
 export default async function ClosingsPage() {
-  const user = await currentUser();
+  const user = await requirePage('closings');
   const [materialRows, structureRows, contractRows, closingRows, targetGroups] = await Promise.all([
     db.select().from(materials).orderBy(materials.id),
     db.select().from(structures).orderBy(structures.sortOrder),

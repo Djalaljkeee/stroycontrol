@@ -3,7 +3,8 @@ import { currentUser } from '@/lib/auth';
 import { LoginForm } from './form';
 
 export default async function LoginPage() {
-  if (await currentUser()) redirect('/dashboard');
+  const user = await currentUser();
+  if (user) redirect(user.home);
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">

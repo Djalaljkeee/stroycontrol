@@ -8,9 +8,12 @@ import type { TargetGroup } from '@/lib/targets';
 export function DeliveryForm({
   materials,
   targets,
+  targetRequired,
 }: {
   materials: { id: number; name: string; kind: string; unit: string }[];
   targets: TargetGroup[];
+  /** Снабжение может оставить бетон без разнесения — его разнесёт прораб. */
+  targetRequired: boolean;
 }) {
   const [materialId, setMaterialId] = useState<string>('');
   const material = materials.find((m) => String(m.id) === materialId);
@@ -44,7 +47,9 @@ export function DeliveryForm({
         label="Куда"
         hint={
           isConcrete
-            ? 'Обязательно для бетона: он уходит сразу в дело. Если на площадке не разделили — весь ярус'
+            ? targetRequired
+              ? 'Обязательно для бетона: он уходит сразу в дело. Если на площадке не разделили — весь ярус'
+              : 'Если не знаете — оставьте пустым, прораб разнесёт'
             : 'Для арматуры — под конкретный блок яруса или на склад'
         }
       >
@@ -52,7 +57,7 @@ export function DeliveryForm({
           name="target"
           defaultValue=""
           groups={targets}
-          placeholder={isConcrete ? 'Выберите ярус или конструктив' : 'на склад'}
+          placeholder={isConcrete ? (targetRequired ? 'Выберите ярус или конструктив' : 'не разнесено') : 'на склад'}
         />
       </Field>
       <Field label="Номер ТТН">

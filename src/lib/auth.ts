@@ -1,10 +1,12 @@
 import 'server-only';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { and, eq, gt } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { db } from '@/db';
-import { sessions, users } from '@/db/schema';
+import { roles, sessions, users } from '@/db/schema';
+import { hrefOf, type Section, type WriteSection } from './access';
 
 /**
  * Аутентификация сделана своей, а не на Auth.js v5, сознательно.
@@ -21,21 +23,18 @@ import { sessions, users } from '@/db/schema';
 const COOKIE = 'stroycontrol_session';
 const TTL_DAYS = 30;
 
-export type Role = 'foreman' | 'supply' | 'estimator' | 'viewer';
-
 export interface SessionUser {
   id: number;
   login: string;
   name: string;
-  role: Role;
+  role: string;
+  roleName: string;
+  roleDescription: string | null;
+  view: Section[];
+  write: WriteSection[];
+  /** Стартовая страница роли. */
+  home: string;
 }
-
-export const ROLE_LABELS: Record<Role, string> = {
-  foreman: 'Прораб',
-  supply: 'Снабжение',
-  estimator: 'Сметчик',
-  viewer: 'Наблюдатель',
-};
 
 /** В таблице лежит хэш токена: дамп базы не даёт войти под чужой учёткой. */
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
@@ -56,7 +55,31 @@ export async function verifyCredentials(
   const ok = await bcrypt.compare(password, hash);
   if (!user || !ok) return null;
 
-  return { id: user.id, login: user.login, name: user.name, role: user.role as Role };
+  return loadSessionUser(user.id);
+}
+
+/** Пользователь вместе с правами его роли — права читаются из БД при каждом запросе. */
+async function loadSessionUser(userId: number): Promise<SessionUser | null> {
+  const [row] = await db
+    .select({ user: users, role: roles })
+    .from(users)
+    .innerJoin(roles, eq(roles.code, users.role))
+    .where(and(eq(users.id, userId), eq(users.isActive, true)))
+    .limit(1);
+  if (!row) return null;
+  const view = row.role.viewSections as Section[];
+  return {
+    id: row.user.id,
+    login: row.user.login,
+    name: row.user.name,
+    role: row.role.code,
+    roleName: row.role.name,
+    roleDescription: row.role.description,
+    view,
+    write: row.role.writeSections as WriteSection[],
+    // Стартовая страница должна быть доступна роли — иначе вход зациклится.
+    home: view.includes(row.role.home as Section) ? hrefOf(row.role.home) : view[0] ? hrefOf(view[0]) : '/account',
+  };
 }
 
 export async function createSession(userId: number): Promise<void> {
@@ -80,6 +103,12 @@ export async function destroySession(): Promise<void> {
   const token = store.get(COOKIE)?.value;
   if (token) await db.delete(sessions).where(eq(sessions.tokenHash, hashToken(token)));
   store.delete(COOKIE);
+}
+
+/** Хэш токена текущей сессии — чтобы при смене пароля закрыть все сессии, кроме неё. */
+export async function currentSessionHash(): Promise<string | null> {
+  const token = (await cookies()).get(COOKIE)?.value;
+  return token ? hashToken(token) : null;
 }
 
 export async function currentUser(): Promise<SessionUser | null> {
@@ -110,22 +139,23 @@ export async function currentUser(): Promise<SessionUser | null> {
   const b = Buffer.from(hashToken(token));
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
 
-  return { id: row.id, login: row.login, name: row.name, role: row.role as Role };
+  return loadSessionUser(row.id);
 }
 
-/** Роли, которым разрешено изменять данные каждого раздела. */
-export const WRITE_ACCESS: Record<string, Role[]> = {
-  pours: ['foreman', 'estimator'],
-  deliveries: ['supply', 'foreman', 'estimator'],
-  issues: ['foreman', 'estimator'],
-  // Процентовку закрывает сметчик: это объёмы, предъявленные заказчику по КС-6а.
-  closings: ['estimator'],
-  baselines: ['estimator'],
-};
+export function canView(user: SessionUser | null, section: Section): boolean {
+  return user != null && user.view.includes(section);
+}
 
-export function canWrite(user: SessionUser | null, section: keyof typeof WRITE_ACCESS): boolean {
-  if (!user) return false;
-  return WRITE_ACCESS[section].includes(user.role);
+/** Для страниц: без входа — на логин, без доступа к разделу — на свой стартовый экран. */
+export async function requirePage(section: Section): Promise<SessionUser> {
+  const user = await currentUser();
+  if (!user) redirect('/login');
+  if (!canView(user, section)) redirect(user.home);
+  return user;
+}
+
+export function canWrite(user: SessionUser | null, section: WriteSection): boolean {
+  return user != null && user.write.includes(section);
 }
 
 export async function requireUser(): Promise<SessionUser> {
@@ -134,10 +164,12 @@ export async function requireUser(): Promise<SessionUser> {
   return user;
 }
 
-export async function requireWrite(section: keyof typeof WRITE_ACCESS): Promise<SessionUser> {
+export async function requireWrite(section: WriteSection): Promise<SessionUser> {
   const user = await requireUser();
   if (!canWrite(user, section)) {
-    throw new Error(`Роль «${ROLE_LABELS[user.role]}» не может изменять этот раздел`);
+    throw new Error(`Роль «${user.roleName}» не может изменять этот раздел`);
   }
   return user;
 }
+
+export type { Section, WriteSection };

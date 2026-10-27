@@ -1,12 +1,14 @@
 import { buildReport, type Cell } from '@/lib/report';
 import { coeff, money, num, percent, signed } from '@/lib/format';
 import { BasisBadge, Card, Empty, VerdictBadge } from '@/components/ui';
+import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Остаточная таблица — СтройКонтроль' };
 
 export default async function BalancePage() {
+  await requirePage('balance');
   const report = await buildReport();
 
   const concrete = report.totals.filter((c) => c.material.kind === 'concrete');

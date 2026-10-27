@@ -5,8 +5,9 @@ import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { auditLog, closings, deliveries, issues, materials, pours, structures } from '@/db/schema';
-import { requireWrite } from '@/lib/auth';
+import { canWrite, requireWrite } from '@/lib/auth';
 import { parseTarget } from '@/lib/targets';
+import { buildProtection } from '@/lib/protection';
 
 export type ActionState = { error?: string; ok?: string };
 
@@ -29,7 +30,7 @@ async function tierOfStructure(structureId: number): Promise<number | null> {
 }
 
 function revalidateAll() {
-  for (const path of ['/tiers', '/deliveries', '/issues', '/closings', '/balance', '/dashboard', '/structures']) {
+  for (const path of ['/control', '/tiers', '/deliveries', '/issues', '/closings', '/balance', '/dashboard', '/structures']) {
     revalidatePath(path);
   }
 }
@@ -101,6 +102,80 @@ export async function setPourStatus(formData: FormData): Promise<void> {
   revalidatePath('/dashboard');
 }
 
+// ── Выполнение конструктива ─────────────────────────────────────────────────
+
+const completeSchema = z.object({
+  target: z.string().min(1, 'Выберите конструктив'),
+  date: isoDate,
+  /** Пусто — весь оставшийся объём по проекту. */
+  volume: z
+    .string()
+    .optional()
+    .transform((v) => (v && v.trim() !== '' ? Number(v.replace(',', '.').replace(/\s/g, '')) : null))
+    .refine((v) => v == null || (Number.isFinite(v) && v > 0), 'Объём — положительное число'),
+  concreteMaterialId: z
+    .string()
+    .optional()
+    .transform((v) => (v && v !== '' ? Number(v) : null)),
+  label: z.string().trim().optional(),
+});
+
+/**
+ * Прораб отмечает, что конструктив (или его часть) забетонирован. С этой даты
+ * объём ждёт защиты: сметчик должен закрыть его процентовкой этого же месяца.
+ */
+export async function completeStructure(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  let user;
+  try {
+    user = await requireWrite('pours');
+  } catch (e) {
+    return fail((e as Error).message);
+  }
+  const parsed = completeSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return fail(parsed.error.issues[0]!.message);
+  const v = parsed.data;
+  const { structureId } = parseTarget(v.target);
+  if (structureId == null) return fail('Выполнение отмечается на конструктив яруса, а не на ярус целиком');
+
+  const { rows } = await buildProtection();
+  const candidates = rows.filter(
+    (r) => r.structureId === structureId && (v.concreteMaterialId == null || r.materialId === v.concreteMaterialId),
+  );
+  const row = candidates.find((r) => r.project != null) ?? candidates[0];
+  if (!row && v.concreteMaterialId == null) {
+    return fail('У конструктива нет проектного объёма — укажите класс бетона и объём');
+  }
+  if (candidates.length > 1 && v.concreteMaterialId == null) {
+    return fail('У конструктива несколько классов бетона — выберите класс');
+  }
+  const materialId = row?.materialId ?? v.concreteMaterialId!;
+  const remaining = row?.project != null ? row.project - row.executed : null;
+  const volume = v.volume ?? remaining;
+  if (volume == null) return fail('Проектного объёма нет — укажите объём');
+  if (volume <= 0.005) return fail('Конструктив уже выполнен полностью');
+
+  const full = remaining != null && volume >= remaining - 0.005;
+  const label = v.label || (full ? 'Выполнен полностью' : 'Частично');
+  const [created] = await db
+    .insert(pours)
+    .values({
+      structureId,
+      label,
+      pouredAt: v.date,
+      designVolumeM3: String(volume),
+      concreteMaterialId: materialId,
+      status: 'done',
+      createdBy: user.id,
+    })
+    .returning({ id: pours.id });
+
+  await audit(user.id, 'complete', 'pour', created.id, { ...v, structureId, materialId, volume });
+  revalidateAll();
+  revalidatePath('/pours');
+  revalidatePath('/control');
+  return { ok: `Отмечено выполнение ${volume.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} м³` };
+}
+
 // ── Приходы ─────────────────────────────────────────────────────────────────
 
 const deliverySchema = z.object({
@@ -130,7 +205,14 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
 
   // Бетон не складируется: поставка без разнесения сразу становится
   // неподтверждённым расходом, поэтому куда он ушёл, спрашиваем при вводе.
-  if (material.kind === 'concrete' && target.structureId == null && target.tierId == null) {
+  // Снабжение может принять ТТН без разнесения — поставка встанет прорабу в очередь
+  // «Бетон без разнесения». Тот, кто разносит сам, обязан указать куда сразу.
+  if (
+    material.kind === 'concrete' &&
+    target.structureId == null &&
+    target.tierId == null &&
+    canWrite(user, 'allocate')
+  ) {
     return fail('Для бетона укажите конструктив или ярус: без этого поставка попадёт в неподтверждённый расход');
   }
   if (material.kind === 'rebar' && material.isAggregate) {
@@ -170,7 +252,7 @@ const allocateSchema = z.object({
  * на «стены +5,920», когда прораб сверил ТТН с захватками.
  */
 export async function allocateDelivery(formData: FormData): Promise<void> {
-  const user = await requireWrite('deliveries');
+  const user = await requireWrite('allocate');
   const v = allocateSchema.parse(Object.fromEntries(formData));
   const target = parseTarget(v.target);
   if (target.structureId == null && target.tierId == null) throw new Error('Не выбрано, куда разнести');

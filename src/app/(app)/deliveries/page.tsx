@@ -2,7 +2,7 @@ import { desc } from 'drizzle-orm';
 import { db } from '@/db';
 import { deliveries, materials, pours, structures, tiers } from '@/db/schema';
 import { date, n, num } from '@/lib/format';
-import { canWrite, currentUser } from '@/lib/auth';
+import { canWrite, requirePage } from '@/lib/auth';
 import { loadTargetGroups } from '@/lib/targets';
 import { Card, Empty } from '@/components/ui';
 import { DeliveryForm } from './form';
@@ -15,7 +15,7 @@ export const metadata = { title: 'Приходы — СтройКонтроль'
 const PAGE_SIZE = 60;
 
 export default async function DeliveriesPage() {
-  const user = await currentUser();
+  const user = await requirePage('deliveries');
   const [materialRows, pourRows, structureRows, tierRows, rows, targetGroups] = await Promise.all([
     db.select().from(materials).orderBy(materials.id),
     db.select().from(pours).orderBy(desc(pours.pouredAt)),
@@ -63,6 +63,7 @@ export default async function DeliveriesPage() {
   // для сравнения со сметой и в форме не предлагается.
   const selectableMaterials = materialRows.filter((m) => !m.isAggregate);
   const writable = canWrite(user, 'deliveries');
+  const canAllocate = canWrite(user, 'allocate');
 
   const allocationTable = (list: typeof rows) => (
     <div className="overflow-x-auto">
@@ -88,7 +89,7 @@ export default async function DeliveriesPage() {
                 </td>
                 <td>{targetLabel(d)}</td>
                 <td>
-                  {writable ? (
+                  {canAllocate ? (
                     <AllocateForm deliveryId={d.id} targets={targetGroups} />
                   ) : (
                     <span className="text-slate-400">нет прав</span>
@@ -120,7 +121,11 @@ export default async function DeliveriesPage() {
 
       {writable ? (
         <Card title="Новый приход">
-          <DeliveryForm materials={selectableMaterials} targets={targetGroups} />
+          <DeliveryForm
+            materials={selectableMaterials}
+            targets={targetGroups}
+            targetRequired={canWrite(user, 'allocate')}
+          />
         </Card>
       ) : null}
 

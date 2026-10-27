@@ -1,4 +1,4 @@
-import { currentUser } from '@/lib/auth';
+import { canView, currentUser } from '@/lib/auth';
 import { buildWorkbook } from '@/lib/export';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +7,7 @@ export async function GET() {
   // Выгрузка содержит договорные объёмы и себестоимость — не для анонимов.
   const user = await currentUser();
   if (!user) return new Response('Требуется вход в систему', { status: 401 });
+  if (!canView(user, 'export')) return new Response('Нет доступа к выгрузке', { status: 403 });
 
   const wb = await buildWorkbook();
   const buffer = await wb.xlsx.writeBuffer();

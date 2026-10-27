@@ -25,7 +25,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   if (!user) return { error: 'Неверный логин или пароль' };
 
   await createSession(user.id);
-  redirect('/dashboard');
+  redirect(user.home);
 }
 
 export async function logout(): Promise<void> {

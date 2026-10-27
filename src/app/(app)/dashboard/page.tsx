@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { buildReport } from '@/lib/report';
 import { coeff, money, moneyShort, num, percent, signed } from '@/lib/format';
 import { Card, Empty, Stat, VerdictBadge } from '@/components/ui';
+import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Дашборд — СтройКонтроль' };
 
 export default async function DashboardPage() {
+  await requirePage('dashboard');
   const report = await buildReport();
 
   const tracked = report.totals.filter(

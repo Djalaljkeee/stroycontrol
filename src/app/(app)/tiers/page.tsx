@@ -1,6 +1,7 @@
 import { buildReport, type MaterialInfo, type TierRow } from '@/lib/report';
 import { coeff, num, signed } from '@/lib/format';
 import { Card, Empty } from '@/components/ui';
+import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,6 +60,7 @@ function RowsTable({ rows, showSku }: { rows: TierRow[]; showSku: boolean }) {
 }
 
 export default async function TiersPage() {
+  await requirePage('tiers');
   const report = await buildReport();
   const unallocated = [...report.unallocatedIncoming.entries()].filter(([, q]) => Math.abs(q) > 0.0005);
   const materialById = new Map(report.materials.map((m) => [m.id, m]));
