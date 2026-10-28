@@ -153,8 +153,10 @@ export async function buildProtection(today: string = new Date().toISOString().s
         return null;
       };
       const closedAt = reachedAt(mc, (c) => n(c.designQuantity), (c) => c.period);
-      const finishedAt =
-        reachedAt(mp, (p) => n(p.designVolumeM3), (p) => p.pouredAt) ?? (closedAt && poured < closed ? closedAt : null);
+      // Выполнение до пилота известно только по процентовке — дата окончания тогда
+      // совпадает с закрытием, и срок защиты по таким конструктивам не считается.
+      const finishedByPours = reachedAt(mp, (p) => n(p.designVolumeM3), (p) => p.pouredAt);
+      const finishedAt = finishedByPours ?? (closedAt && poured < closed ? closedAt : null);
 
       const status: ProtectionStatus =
         unclosed > 0.01
@@ -191,7 +193,7 @@ export async function buildProtection(today: string = new Date().toISOString().s
         pendingSince,
         deadline,
         overdueDays,
-        protectionDays: finishedAt && closedAt ? Math.max(0, daysBetween(finishedAt, closedAt)) : null,
+        protectionDays: finishedByPours && closedAt ? Math.max(0, daysBetween(finishedByPours, closedAt)) : null,
         status,
       });
     }
