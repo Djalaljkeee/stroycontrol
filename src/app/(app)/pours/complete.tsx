@@ -12,11 +12,11 @@ export function CompleteForm({
   materials: { id: number; name: string }[];
 }) {
   return (
-    <ActionForm action={completeStructure} submitLabel="Отметить выполнение">
+    <ActionForm action={completeStructure} submitLabel="Записать">
       <Field label="Конструктив" hint="Захватки сгруппированы по этажам">
         <TargetSelect name="target" defaultValue="" groups={targets} placeholder="Выберите конструктив" />
       </Field>
-      <Field label="Дата окончания">
+      <Field label="Дата">
         <TextInput name="date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
       </Field>
       <Field label="Объём, м³" hint="Пусто — весь оставшийся объём по проекту">
@@ -32,7 +32,14 @@ export function CompleteForm({
           ))}
         </Select>
       </Field>
-      <Field label="Примечание">
+      <Field label="Статус" hint="В выполнение идут только залитые">
+        <Select name="status" defaultValue="done">
+          <option value="done">Залита</option>
+          <option value="in_progress">В работе</option>
+          <option value="planned">Запланирована</option>
+        </Select>
+      </Field>
+      <Field label="Захватка / оси">
         <TextInput name="label" placeholder="захватка 2, оси 1–7" />
       </Field>
     </ActionForm>

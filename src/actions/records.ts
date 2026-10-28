@@ -47,46 +47,6 @@ async function audit(userId: number, action: string, entity: string, entityId: n
 
 // ── Захватки ────────────────────────────────────────────────────────────────
 
-const pourSchema = z.object({
-  structureId: z.coerce.number().int().positive('Выберите конструктив'),
-  label: z.string().trim().min(1, 'Укажите номер или название захватки'),
-  pouredAt: isoDate,
-  designVolumeM3: decimal,
-  concreteMaterialId: z.coerce.number().int().positive('Выберите класс бетона'),
-  status: z.enum(['planned', 'in_progress', 'done']),
-});
-
-export async function createPour(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  let user;
-  try {
-    user = await requireWrite('pours');
-  } catch (e) {
-    return fail((e as Error).message);
-  }
-
-  const parsed = pourSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail(parsed.error.issues[0]!.message);
-  const v = parsed.data;
-
-  const [row] = await db
-    .insert(pours)
-    .values({
-      structureId: v.structureId,
-      label: v.label,
-      pouredAt: v.pouredAt,
-      designVolumeM3: String(v.designVolumeM3),
-      concreteMaterialId: v.concreteMaterialId,
-      status: v.status,
-      createdBy: user.id,
-    })
-    .returning({ id: pours.id });
-
-  await audit(user.id, 'create', 'pour', row.id, v);
-  revalidateAll();
-  revalidatePath('/pours');
-  return { ok: `Захватка «${v.label}» создана` };
-}
-
 const statusSchema = z.object({
   pourId: z.coerce.number().int().positive(),
   status: z.enum(['planned', 'in_progress', 'done']),
@@ -118,6 +78,8 @@ const completeSchema = z.object({
     .optional()
     .transform((v) => (v && v !== '' ? Number(v) : null)),
   label: z.string().trim().optional(),
+  /** «В работе» и «запланирована» в выполнение не идут, пока их не переведут в «залита». */
+  status: z.enum(['planned', 'in_progress', 'done']).default('done'),
 });
 
 /**
@@ -155,7 +117,9 @@ export async function completeStructure(_prev: ActionState, formData: FormData):
   if (volume <= 0.005) return fail('Конструктив уже выполнен полностью');
 
   const full = remaining != null && volume >= remaining - 0.005;
-  const label = v.label || (full ? 'Выполнен полностью' : 'Частично');
+  const label =
+    v.label ||
+    (v.status === 'done' ? (full ? 'Выполнен полностью' : 'Частично') : v.status === 'in_progress' ? 'В работе' : 'Запланирована');
   const [created] = await db
     .insert(pours)
     .values({
@@ -164,7 +128,7 @@ export async function completeStructure(_prev: ActionState, formData: FormData):
       pouredAt: v.date,
       designVolumeM3: String(volume),
       concreteMaterialId: materialId,
-      status: 'done',
+      status: v.status,
       createdBy: user.id,
     })
     .returning({ id: pours.id });
@@ -173,7 +137,8 @@ export async function completeStructure(_prev: ActionState, formData: FormData):
   revalidateAll();
   revalidatePath('/pours');
   revalidatePath('/control');
-  return { ok: `Отмечено выполнение ${volume.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} м³` };
+  const amount = `${volume.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} м³`;
+  return { ok: v.status === 'done' ? `Отмечено выполнение ${amount}` : `Записана захватка ${amount}` };
 }
 
 // ── Приходы ─────────────────────────────────────────────────────────────────

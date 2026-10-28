@@ -6,7 +6,6 @@ import { coeff, date, n, num } from '@/lib/format';
 import { canWrite, requirePage } from '@/lib/auth';
 import { K_CONCRETE } from '@/domain';
 import { Card, Empty, VerdictBadge } from '@/components/ui';
-import { PourForm } from './form';
 import { CompleteForm } from './complete';
 import { loadTargetGroups } from '@/lib/targets';
 import { buildProtection } from '@/lib/protection';
@@ -53,15 +52,12 @@ export default async function PoursPage() {
     }
   }
 
-  // Конструктивы-разделы захватку не несут: заливают конкретную конструкцию.
-  const pourTargets = structureRows.filter((s) => s.kind !== 'object' && s.kind !== 'section');
-
   return (
     <div className="space-y-5">
       <div>
         <h1 className="text-lg font-semibold text-slate-900">Журнал бетонных работ</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
-          Когда конструктив забетонирован, отметьте выполнение — с этой даты объём ждёт защиты в
+          Когда конструктив забетонирован, запишите заливку со статусом «залита» — с этой даты объём ждёт защиты в
           процентовке, и руководитель видит, что закрыть.
         </p>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
@@ -72,7 +68,7 @@ export default async function PoursPage() {
       </div>
 
       {canWrite(user, 'pours') ? (
-        <Card title="Отметить выполнение конструктива">
+        <Card title="Запись в журнал">
           <CompleteForm targets={targetGroups} materials={concreteMaterials} />
         </Card>
       ) : null}
@@ -86,15 +82,6 @@ export default async function PoursPage() {
           </div>
         )}
       </Card>
-
-      {canWrite(user, 'pours') ? (
-        <Card
-          title="Новая захватка вручную"
-          hint="Для частичной заливки с отдельным номером и статусом «запланирована / в работе»."
-        >
-          <PourForm structures={pourTargets} materials={concreteMaterials} />
-        </Card>
-      ) : null}
 
       <Card
         title="Журнал заливок"
