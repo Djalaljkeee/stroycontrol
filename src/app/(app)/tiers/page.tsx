@@ -90,7 +90,7 @@ export default async function TiersPage() {
       {unallocated.length > 0 ? (
         <Card
           title="Приход, не разнесённый ни на этаж, ни на конструктив"
-          hint="Бетон без разнесения числится неподтверждённым расходом, арматура — складом. Разнести — на странице «Приходы»."
+          hint="Бетон без разнесения числится неподтверждённым расходом, арматура — складом. Разнести — на странице «Приход и списание»."
         >
           <ul className="text-sm text-slate-700">
             {unallocated.map(([id, q]) => (
@@ -116,7 +116,12 @@ export default async function TiersPage() {
         return (
           <section key={t.tier.id} id={`tier-${t.tier.code}`} className="scroll-mt-4">
             <Card
-              title={`${t.tier.name} · ${range}`}
+              title={
+                // У этажей КЖ1 отметки уже в названии — не повторяем.
+                (levelFrom && t.tier.name.includes(levelFrom)) || (levelTo && t.tier.name.includes(levelTo))
+                  ? t.tier.name
+                  : `${t.tier.name} · ${range}`
+              }
               hint={
                 t.tier.consumptionFromClosings
                   ? 'Приход по этажу исторически не делился по конструктивам: расход здесь считается по процентовке.'
