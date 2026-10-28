@@ -155,11 +155,9 @@ export default async function StructuresPage() {
                       // Класс, который ДС заменил другим, заказывать не нужно.
                       const order = c.material.isAggregate ? rebarOrder.get(s.id) : undefined;
                       // У арматуры итог — сумма по диаметрам: так строка сходится с разбивкой под ней.
-                      const toDeliver = order
-                        ? order.total
-                        : c.basePurchase != null && !c.superseded
-                          ? c.basePurchase - covered
-                          : null;
+                      const raw = c.basePurchase != null && !c.superseded ? c.basePurchase - covered : null;
+                      // Перевоз показываем как есть — по диаметрам остаток не бывает отрицательным.
+                      const toDeliver = order && !(raw != null && raw < -0.005) ? order.total : raw;
                       return (
                         <Fragment key={`c-${s.id}-${c.material.id}`}>
                           <tr className={c.superseded ? 'text-slate-400' : undefined}>
