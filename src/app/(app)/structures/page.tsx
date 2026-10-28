@@ -35,7 +35,7 @@ export default async function StructuresPage() {
       {order.unsplit > 0.005 ? (
         <tr key={`sku-${sid}-unsplit`} className="text-xs text-slate-500">
           <td style={{ paddingLeft: `${1.6 + depth * 1.1}rem` }} />
-          <td className="text-left">без разбивки — КЖ не выпущен</td>
+          <td className="text-left">без разбивки по диаметрам — КЖ не выпущен</td>
           <td colSpan={5} />
           <td>{amount(order.unsplit, 'т')}</td>
         </tr>

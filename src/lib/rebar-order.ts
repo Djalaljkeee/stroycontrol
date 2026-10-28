@@ -24,23 +24,26 @@ export interface RebarOrder {
 }
 
 const covered = (c: Cell) => Math.max(c.balance.incoming, c.balance.consumed);
+const aggregateOf = (cells: Cell[]) => cells.find((c) => c.material.kind === 'rebar' && c.material.isAggregate);
+/** Довезти по общему тоннажу узла — так же, как в строке «Арматура в ассортименте». */
+const aggregateToDeliver = (agg: Cell) =>
+  agg.basePurchase != null ? Math.max(0, agg.basePurchase - covered(agg)) : 0;
 
 function leafOrder(cells: Cell[]): RebarOrder | null {
-  const agg = cells.find((c) => c.material.kind === 'rebar' && c.material.isAggregate);
+  const agg = aggregateOf(cells);
   if (!agg) return null;
-  const aggToDeliver = agg.basePurchase != null ? Math.max(0, agg.basePurchase - covered(agg)) : 0;
+  const aggToDeliver = aggregateToDeliver(agg);
   const skuCells = cells.filter((c) => c.material.aggregateId === agg.material.id && c.basePurchase != null);
 
   const rem = skuCells.map((c) => Math.max(0, c.basePurchase! - covered(c)));
   const sumRem = rem.reduce((a, b) => a + b, 0);
   // Покрытие общим тоннажом (КС-6а) уменьшает остатки диаметров пропорционально.
   const scale = sumRem > 0 ? Math.min(1, aggToDeliver / sumRem) : 0;
-  const skus = skuCells.map((c, i) => ({
-    material: c.material,
-    project: c.basePurchase!,
-    delivered: covered(c),
-    toDeliver: rem[i] * scale,
-  }));
+  const skus = skuCells.map((c, i) => {
+    const toDeliver = rem[i] * scale;
+    // Привезено с учётом доли, закрытой общим тоннажом: привезено + довезти = проект.
+    return { material: c.material, project: c.basePurchase!, delivered: Math.max(covered(c), c.basePurchase! - toDeliver), toDeliver };
+  });
   const split = skus.reduce((a, s) => a + s.toDeliver, 0);
   const unsplit = Math.max(0, aggToDeliver - split);
   return { skus, unsplit, total: split + unsplit };
@@ -71,13 +74,18 @@ export function buildRebarOrder(report: Report): Map<number, RebarOrder> {
         bySku.set(l.material.id, acc);
       }
     }
-    if (bySku.size === 0 && unsplit === 0) continue;
+    // Договор на строку КС-6а лежит на родителе, а не на захватках: у этажей без КЖ
+    // остаток есть только на уровне узла — он и идёт «без разбивки».
+    const agg = aggregateOf(report.byStructure.get(s.id)?.cells ?? []);
+    const split = [...bySku.values()].reduce((a, l) => a + l.toDeliver, 0);
+    if (agg && s.subtree.length > 1) unsplit = Math.max(unsplit, aggregateToDeliver(agg) - split);
+    if (bySku.size === 0 && unsplit <= 0.005) continue;
     const skus = [...bySku.values()].sort(
       (a, b) =>
         (a.material.rebarDiameter ?? 0) - (b.material.rebarDiameter ?? 0) ||
         (a.material.rebarClass ?? '').localeCompare(b.material.rebarClass ?? ''),
     );
-    const total = unsplit + skus.reduce((a, l) => a + l.toDeliver, 0);
+    const total = unsplit + split;
     out.set(s.id, { skus, unsplit, total });
   }
   return out;
