@@ -7,7 +7,7 @@ export const SECTIONS = [
   { key: 'deliveries', label: 'Приход и списание', href: '/deliveries', hint: 'поставки сразу на конструктив' },
   { key: 'pours', label: 'Журнал', caption: 'бетонных работ', href: '/pours', hint: 'журнал бетонных работ: заливки и выполнение конструктивов' },
   { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»' },
-  { key: 'closings', label: 'Процентовка', href: '/closings', hint: 'закрытие по КС-6а' },
+  { key: 'closings', label: 'Выполнение', href: '/closings', hint: 'закрытие по КС-6а' },
   { key: 'balance', label: 'Остатки', href: '/balance', hint: 'склад и остаточная таблица' },
   { key: 'structures', label: 'Конструктивы', href: '/structures', hint: 'дерево договора с базами' },
   { key: 'revisions', label: 'Редакции', href: '/revisions', hint: 'ДС и выпуски КЖ' },
@@ -21,7 +21,7 @@ export const WRITE_SECTIONS = [
   { key: 'deliveries', label: 'Ввод прихода и списания', needs: 'deliveries' },
   { key: 'allocate', label: 'Разнесение прихода по конструкциям', needs: 'deliveries' },
   { key: 'pours', label: 'Журнал бетонных работ', needs: 'pours' },
-  { key: 'closings', label: 'Процентовка', needs: 'closings' },
+  { key: 'closings', label: 'Выполнение (КС-6а)', needs: 'closings' },
   { key: 'baselines', label: 'Базы сравнения', needs: 'structures' },
 ] as const;
 

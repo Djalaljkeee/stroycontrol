@@ -9,6 +9,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # npm ci до копирования исходников: слой с зависимостями переиспользуется,
 # пока не менялся package-lock.json.
 COPY package.json package-lock.json ./
+# SheetJS ставится из tgz в репозитории: в npm только 0.18.5 с уязвимостями.
+COPY vendor ./vendor
 RUN npm ci --no-audit --no-fund
 
 COPY . .

@@ -6,10 +6,11 @@ import { canWrite, requirePage } from '@/lib/auth';
 import { loadTargetGroups } from '@/lib/targets';
 import { Card, Empty } from '@/components/ui';
 import { ClosingForm } from './form';
+import { Ks6aImport } from './import';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Процентовка — СтройКонтроль' };
+export const metadata = { title: 'Выполнение — СтройКонтроль' };
 
 const RECENT = 40;
 
@@ -80,7 +81,7 @@ export default async function ClosingsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Процентовка</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Выполнение</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
           Что закрыто перед заказчиком по КС-6а, помесячно. Вводится на захватку этажа — так
           видно, какой именно этаж закрыт, — а в таблице собирается по строкам договора. Объём
@@ -89,9 +90,17 @@ export default async function ClosingsPage() {
       </div>
 
       {canWrite(user, 'closings') ? (
-        <Card title="Закрыть объём за месяц">
-          <ClosingForm materials={selectable} targets={targetGroups} />
-        </Card>
+        <>
+          <Card
+            title="Загрузить КС-6а из Excel"
+            hint="Заполненная КС-6а (.xls или .xlsx) в форме договора: лист с таблицей и помесячными колонками «объём / стоимость». Сначала разбор и проверка, запись — отдельной кнопкой."
+          >
+            <Ks6aImport />
+          </Card>
+          <Card title="Закрыть объём за месяц вручную">
+            <ClosingForm materials={selectable} targets={targetGroups} />
+          </Card>
+        </>
       ) : null}
 
       <Card
@@ -146,9 +155,9 @@ export default async function ClosingsPage() {
         ) : null}
       </Card>
 
-      <Card title="Журнал процентовки">
+      <Card title="Журнал выполнения">
         {closingRows.length === 0 ? (
-          <Empty>Процентовки пока нет.</Empty>
+          <Empty>Выполнения пока нет.</Empty>
         ) : (
           <div className="overflow-x-auto">
             <table className="grid-table text-sm">

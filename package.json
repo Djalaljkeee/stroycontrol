@@ -28,6 +28,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "server-only": "^0.0.1",
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz",
     "zod": "^4.5.4"
   },
   "devDependencies": {
