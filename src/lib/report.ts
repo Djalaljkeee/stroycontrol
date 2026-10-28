@@ -137,6 +137,8 @@ export interface TierRow {
   /** Проект, конструктивный объём (м3 / т). */
   project: number | null;
   projectRevision: string | null;
+  /** Проект взят с уровня этажа (лист КЖ0), а не сложен из конструктивов. */
+  projectFromTier: boolean;
   /** Проект × К — сколько должно быть привезено. */
   projectWithK: number | null;
   /** Привезено и разнесено сюда. */
@@ -737,6 +739,7 @@ export async function buildReport(): Promise<Report> {
             material: m,
             project: project?.value ?? null,
             projectRevision: project?.revision ?? null,
+            projectFromTier: false,
             projectWithK: project ? project.value * kOf(m) : null,
             incoming: incomingQty,
             closed: closedQty,
@@ -752,6 +755,7 @@ export async function buildReport(): Promise<Report> {
         // Ярусная база (проект КЖ0 с листа) важнее суммы захваток: она полная,
         // а захватки КЖ0 своих ведомостей не имеют.
         let project = projectOf(`t${tier.id}`, m);
+        const projectFromTier = project != null;
         if (!project) {
           let total: number | null = null;
           let revision: string | null = null;
@@ -771,6 +775,7 @@ export async function buildReport(): Promise<Report> {
           material: m,
           project: project?.value ?? null,
           projectRevision: project?.revision ?? null,
+          projectFromTier,
           projectWithK: project ? project.value * kOf(m) : null,
           incoming: incomingQty,
           closed: closedQty,

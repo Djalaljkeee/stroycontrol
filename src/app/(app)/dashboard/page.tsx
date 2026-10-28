@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildReport } from '@/lib/report';
+import { buildOverrun, costLines, overrunCost as sumOverrunCost } from '@/lib/overrun';
 import { coeff, money, moneyShort, num, percent, signed } from '@/lib/format';
 import { Card, Empty, Stat, VerdictBadge } from '@/components/ui';
 import { canView, requirePage } from '@/lib/auth';
@@ -17,12 +18,11 @@ export default async function DashboardPage() {
     (c) => c.material.kind === 'concrete' || c.material.isAggregate,
   );
 
-  // Прогнозный перерасход в деньгах считается только по позициям, где он
-  // положителен: взаимозачёт экономии по одному классу с перерасходом по
-  // другому скрыл бы проблему.
-  const overrunCost = tracked
-    .filter((c) => (c.forecast.overrunVsEstimate ?? 0) > 0)
-    .reduce((acc, c) => acc + (c.forecast.overrunCost ?? 0), 0);
+  // Перерасход — как в листе «приходы»: привезено по ТТН против проекта × К
+  // по каждому блоку. В деньгах — только положительные строки: экономия на
+  // одном блоке не закрывает перерасход на другом.
+  const lines = buildOverrun(report);
+  const overrunCost = sumOverrunCost(lines);
 
   const unconfirmed = tracked.filter((c) => c.balance.unconfirmed > 0.01);
   const unconfirmedCost = unconfirmed.reduce(
@@ -33,31 +33,9 @@ export default async function DashboardPage() {
   const stock = tracked.filter((c) => c.balance.stock > 0.01);
   const stockCost = stock.reduce((acc, c) => acc + c.balance.stock * (c.unitCost ?? 0), 0);
 
-  // Проблемы почти всегда видны на конструктиве, а не в итоге по объекту:
-  // перерасход на одной конструкции растворяется в общем объёме.
-  const attention = report.structures
-    .flatMap((s) => {
-      const r = report.byStructure.get(s.id)!;
-      return r.cells
-        .filter((c) => c.material.kind === 'concrete' || c.material.isAggregate)
-        .filter((c) => c.forecast.verdict === 'over' || c.forecast.verdict === 'warning')
-        // Без своей базы К считается от армированности родителя — для захваток
-        // КЖ0, у которых нет ведомостей, это даёт ложную тревогу.
-        .filter((c) => c.forecast.progress != null)
-        .map((c) => ({ structure: s, cell: c }));
-    })
-    // Родительский узел повторяет проблему ребёнка: показываем самый глубокий.
-    .filter(({ structure, cell }, _i, all) =>
-      !all.some(
-        (o) =>
-          o.cell.material.id === cell.material.id &&
-          o.structure.depth > structure.depth &&
-          o.structure.subtree.every((id) => structure.subtree.includes(id)),
-      ),
-    )
-    .sort(
-      (a, b) => (b.cell.forecast.overrunCost ?? 0) - (a.cell.forecast.overrunCost ?? 0),
-    );
+  const attention = costLines(lines)
+    .filter((l) => l.verdict === 'over' || l.verdict === 'warning')
+    .sort((a, b) => (b.cost ?? 0) - (a.cost ?? 0));
 
   const object = report.structures.find((s) => s.parentId == null);
   const objectReport = object ? report.byStructure.get(object.id) : undefined;
@@ -81,9 +59,9 @@ export default async function DashboardPage() {
           )} м³ конструктива`}
         />
         <Stat
-          label="Прогноз перерасхода"
+          label="Перерасход по приходу"
           value={moneyShort(overrunCost)}
-          sub="по себестоимости, против сметных лимитов"
+          sub="привезено сверх проекта × К, по себестоимости"
           tone={overrunCost > 0 ? 'over' : 'ok'}
         />
         <Stat
@@ -101,45 +79,44 @@ export default async function DashboardPage() {
 
       <Card
         title="Требует внимания"
-        hint="Фактический коэффициент расхода выше нормативного больше чем на 2%. Показан самый нижний уровень, на котором виден перерасход; звёздочка — выполнено меньше 10%, коэффициент ещё не показателен."
+        hint="Привезено по ТТН больше, чем проект × К, — так же, как в листе «приходы»: по каждому блоку, куда разносился приход; на КЖ0 и 1-м этаже — по этажу целиком. Проект — последний выпуск КЖ (КЖ1 изм. 8), арматура — по диаметрам. «Тревога» — сверх проекта × К не больше чем на 2%."
       >
         {attention.length === 0 ? (
-          <Empty>Все отслеживаемые позиции в пределах нормы расхода.</Empty>
+          <Empty>Нигде не привезено больше проекта × К.</Empty>
         ) : (
           <table className="grid-table text-sm">
             <thead>
               <tr>
+                <th>Этаж</th>
                 <th>Конструктив</th>
                 <th>Материал</th>
+                <th>Проект</th>
+                <th>Проект&nbsp;×&nbsp;К</th>
+                <th>Приход</th>
                 <th>К&nbsp;норм</th>
-                <th>К&nbsp;факт</th>
-                <th>Выполнено</th>
-                <th>Прогноз</th>
+                <th title="Приход / проект">К&nbsp;факт</th>
                 <th>Перерасход</th>
                 <th>В рублях</th>
                 <th>Оценка</th>
               </tr>
             </thead>
             <tbody>
-              {attention.map(({ structure, cell: c }) => (
-                <tr key={`${structure.id}-${c.material.id}`}>
-                  <td>{structure.name}</td>
-                  <td>{c.material.name}</td>
-                  <td>{coeff(c.k)}</td>
-                  <td className="font-medium">{coeff(c.forecast.kActual)}</td>
+              {attention.map((l) => (
+                <tr key={`${l.tier.id}-${l.structure?.id ?? 'tier'}-${l.material.id}`}>
+                  <td>{l.tier.name}</td>
+                  <td>{l.structure?.name ?? <span className="text-slate-500">этаж целиком</span>}</td>
+                  <td>{l.material.name}</td>
+                  <td>{num(l.project)}</td>
+                  <td>{num(l.projectWithK)}</td>
                   <td>
-                    {percent(c.forecast.progress)}
-                    {c.forecast.confidence === 'preliminary' ? (
-                      <span title="Выполнено меньше 10% — коэффициент ещё не показателен"> *</span>
-                    ) : null}
+                    {num(l.incoming)} {l.material.unit}
                   </td>
+                  <td>{coeff(l.k)}</td>
+                  <td className="font-medium">{coeff(l.kActual)}</td>
+                  <td>{signed(l.overrun)}</td>
+                  <td>{money(l.cost)}</td>
                   <td>
-                    {num(c.forecast.total)} {c.material.unit}
-                  </td>
-                  <td>{signed(c.forecast.overrunVsEstimate)}</td>
-                  <td>{money(c.forecast.overrunCost)}</td>
-                  <td>
-                    <VerdictBadge verdict={c.forecast.verdict} />
+                    <VerdictBadge verdict={l.verdict} />
                   </td>
                 </tr>
               ))}

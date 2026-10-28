@@ -4,7 +4,8 @@ import { closings, materials, pours } from '@/db/schema';
 import { requirePage } from '@/lib/auth';
 import { buildProtection, type ProtectionRow } from '@/lib/protection';
 import { buildReport } from '@/lib/report';
-import { coeff, money, moneyShort, n, num, percent, signed } from '@/lib/format';
+import { buildOverrun, overrunByMaterial, overrunCost as sumOverrunCost } from '@/lib/overrun';
+import { moneyShort, n, num, percent, signed } from '@/lib/format';
 import { Card, Empty, Stat, VerdictBadge } from '@/components/ui';
 import { ProtectionTable } from '@/components/protection';
 import { ControlTabs } from '@/components/control-tabs';
@@ -51,9 +52,9 @@ export default async function ControlPage() {
   const months = [...monthly.entries()].sort(([a], [b]) => a.localeCompare(b));
 
   const tracked = report.totals.filter((c) => c.material.kind === 'concrete' || c.material.isAggregate);
-  const overrunCost = tracked
-    .filter((c) => (c.forecast.overrunVsEstimate ?? 0) > 0)
-    .reduce((acc, c) => acc + (c.forecast.overrunCost ?? 0), 0);
+  const lines = buildOverrun(report);
+  const overrunCost = sumOverrunCost(lines);
+  const overrunOf = overrunByMaterial(lines);
 
   const groups = [
     ...tiers.map((t) => ({ key: t.code, name: t.name, rows: rows.filter((r) => r.tierId === t.id) })),
@@ -100,9 +101,9 @@ export default async function ControlPage() {
           tone={overdue.length > 0 ? 'over' : 'ok'}
         />
         <Stat
-          label="Прогноз перерасхода"
+          label="Перерасход по приходу"
           value={moneyShort(overrunCost)}
-          sub="против сметных лимитов, по себестоимости"
+          sub="привезено сверх проекта × К, по себестоимости"
           tone={overrunCost > 0 ? 'over' : 'ok'}
         />
       </div>
@@ -149,40 +150,48 @@ export default async function ControlPage() {
           </p>
         </Card>
 
-        <Card title="Смета и прогноз" hint="По объекту целиком. Подробно — на странице «Прогноз».">
+        <Card
+          title="Смета, договор и перерасход"
+          hint="Рост к смете — насколько действующий ДС или проект × К больше сметного лимита: это объём по договору, а не перерасход. Перерасход — привезено сверх проекта × К, сумма по блокам."
+        >
           <table className="grid-table text-sm">
             <thead>
               <tr>
                 <th>Материал</th>
-                <th>Сметный лимит</th>
-                <th>К факт</th>
-                <th>Прогноз</th>
+                <th>Смета</th>
+                <th>ДС / проект × К</th>
+                <th>Рост к смете</th>
+                <th>Приход</th>
                 <th>Перерасход</th>
-                <th>₽</th>
                 <th>Оценка</th>
               </tr>
             </thead>
             <tbody>
-              {tracked.map((c) => (
-                <tr key={c.material.id}>
-                  <td>{c.material.name}</td>
-                  <td>
-                    {num(c.estimatePurchase, 0)} {c.material.unit}
-                  </td>
-                  <td>{coeff(c.forecast.kActual)}</td>
-                  <td>{num(c.forecast.total, 0)}</td>
-                  <td>{signed(c.forecast.overrunVsEstimate, 0)}</td>
-                  <td>{money(c.forecast.overrunCost)}</td>
-                  <td>
-                    <VerdictBadge verdict={c.forecast.verdict} />
-                  </td>
-                </tr>
-              ))}
+              {tracked.map((c) => {
+                const o = overrunOf.get(c.material.id);
+                return (
+                  <tr key={c.material.id} className={c.superseded ? 'text-slate-400' : undefined}>
+                    <td>{c.material.name}</td>
+                    <td>
+                      {num(c.estimatePurchase, 0)} {c.material.unit}
+                    </td>
+                    <td>{c.superseded ? '—' : num(c.basePurchase, 0)}</td>
+                    <td>
+                      {!c.superseded && c.basePurchase != null && c.estimatePurchase != null
+                        ? signed(c.basePurchase - c.estimatePurchase, 0)
+                        : '—'}
+                    </td>
+                    <td>{num(c.balance.incoming, 0)}</td>
+                    <td>{o && o.overrun > 0 ? signed(o.overrun) : '—'}</td>
+                    <td>{o ? <VerdictBadge verdict={o.verdict} /> : '—'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           <p className="mt-2 text-sm">
             <Link href="/dashboard" className="text-sky-700 underline">
-              Конструктивы с перерасходом →
+              Блоки с перерасходом →
             </Link>
           </p>
         </Card>

@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { existsSync } from 'node:fs';
 import { dropTestDatabase, prepareTestDatabase } from './setup-db';
+import { buildOverrun } from '@/lib/overrun';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 
@@ -59,11 +60,24 @@ describe.skipIf(!hasDb)('отчёт на данных объекта', () => {
     return t.rows.find((r) => r.material.code === material);
   };
 
-  it('приход сходится с листом «приходы» (с восстановленной поставкой 25.07)', () => {
+  it('приход сходится с листом «приходы» от 27.10', () => {
     expect(cell('CONCRETE_B30').balance.incoming).toBeCloseTo(3596.2, 2);
-    // 642,4 по листу + 102 м³ от 25.07, выпавшие из версии от 27.10.
-    expect(cell('CONCRETE_B25').balance.incoming).toBeCloseTo(744.4, 2);
+    expect(cell('CONCRETE_B25').balance.incoming).toBeCloseTo(642.4, 2);
     expect(cell('REBAR').balance.incoming).toBeCloseTo(716.69, 2);
+  });
+
+  it('перерасход — приход − проект × К по блокам листа', () => {
+    const lines = buildOverrun(report);
+    const line = (tier: string, structure: string | null, code: string) =>
+      lines.find(
+        (l) => l.tier.code === tier && (l.structure?.code ?? null) === structure && l.material.code === code,
+      );
+    // Те же цифры, что в колонках листа; колонны — по проекту КЖ1 изм. 8.
+    expect(line('KJ0', null, 'CONCRETE_B7_5')!.overrun).toBeCloseTo(57.125, 3);
+    expect(line('KJ0', null, 'CONCRETE_B30')!.verdict).toBe('ok');
+    expect(line('KJ0', '3.2-stairs-KJ0', 'CONCRETE_B25')!.overrun).toBeCloseTo(0.255, 3);
+    expect(line('T3', '3.2-columns-T3', 'REBAR_32_A500')!.overrun).toBeCloseTo(25.148 - 18.196 * 1.1, 2);
+    expect(line('T4', '3.2-walls-kj1-T4', 'REBAR_8_A240')!.overrun).toBeCloseTo(2.8 - 1.7417 * 1.1, 2);
   });
 
   it('весь приход разнесён на ярус или конструктив', () => {

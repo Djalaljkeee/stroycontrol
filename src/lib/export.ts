@@ -3,6 +3,7 @@ import { asc } from 'drizzle-orm';
 import { db } from '@/db';
 import { closings, deliveries, issues, materials, pours, structures, tiers } from '@/db/schema';
 import { buildReport } from '@/lib/report';
+import { buildOverrun, overrunByMaterial } from '@/lib/overrun';
 import { n } from '@/lib/format';
 
 const HEADER_FILL: ExcelJS.Fill = {
@@ -46,6 +47,8 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
       db.select().from(closings).orderBy(asc(closings.period)),
     ]);
 
+  const overrunLines = buildOverrun(report);
+  const overrunOf = overrunByMaterial(overrunLines);
   const structureById = new Map(structureRows.map((s) => [s.id, s]));
   const materialById = new Map(materialRows.map((m) => [m.id, m]));
 
@@ -58,11 +61,12 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
   styleHeader(
     balance.addRow([
       'Материал', 'Ед.', 'Смета (лимит)', 'Смета по ресурсной', 'Проект', 'База', 'Редакция', 'Приход', 'Списано',
-      'Склад', 'Не подтверждено', 'Выполнено, %', 'К норм', 'К факт', 'Прогноз',
-      'Перерасход', 'Перерасход, ₽', 'Оценка', 'Примечание',
+      'Склад', 'Не подтверждено', 'К норм', 'Перерасход (приход − проект × К)', 'Перерасход, ₽', 'Оценка',
+      'Примечание',
     ]),
   );
   for (const c of report.totals) {
+    const o = overrunOf.get(c.material.id);
     balance.addRow([
       c.material.name,
       c.material.unit,
@@ -75,27 +79,22 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
       c.balance.consumed,
       c.balance.stock,
       c.balance.unconfirmed,
-      c.forecast.progress,
       c.k,
-      c.forecast.kActual,
-      c.forecast.total,
-      c.forecast.overrunVsEstimate,
-      c.forecast.overrunCost,
-      c.forecast.verdict,
+      o ? o.overrun : null,
+      o ? o.cost : null,
+      o?.verdict ?? null,
       c.superseded ? 'лимит переехал в другой класс по действующему ДС' : null,
     ]);
   }
-  balance.getColumn(12).numFmt = '0.0%';
-  autoWidth(balance, [30, 6, 14, 18, 12, 10, 12, 12, 12, 12, 16, 13, 8, 8, 12, 13, 16, 12, 46]);
+  autoWidth(balance, [30, 6, 14, 18, 12, 10, 12, 12, 12, 12, 16, 8, 18, 16, 12, 46]);
   balance.views = [{ state: 'frozen', ySplit: 1 }];
 
   // ── Конструктивы ─────────────────────────────────────────────────────────
   const byStructure = wb.addWorksheet('Конструктивы');
   styleHeader(
     byStructure.addRow([
-      'Код', 'Конструктив', 'Отметка', 'Материал', 'База', 'Редакция', 'Объём базы',
-      'Смета', 'Приход', 'Списано', 'Выполнено, %', 'К факт', 'Прогноз', 'Перерасход',
-      'Перерасход, ₽', 'Оценка',
+      'Код', 'Конструктив', 'Отметка', 'Материал', 'База', 'Редакция', 'Проект × К',
+      'Смета', 'Приход', 'Списано',
     ]),
   );
   for (const s of report.structures) {
@@ -113,18 +112,38 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
         c.estimatePurchase,
         c.balance.incoming,
         c.balance.consumed,
-        c.forecast.progress,
-        c.forecast.kActual,
-        c.forecast.total,
-        c.forecast.overrunVsEstimate,
-        c.forecast.overrunCost,
-        c.forecast.verdict,
       ]);
     }
   }
-  byStructure.getColumn(11).numFmt = '0.0%';
-  autoWidth(byStructure, [14, 42, 10, 26, 10, 12, 12, 12, 12, 12, 13, 8, 12, 13, 16, 12]);
+  autoWidth(byStructure, [14, 42, 10, 26, 10, 12, 12, 12, 12, 12]);
   byStructure.views = [{ state: 'frozen', ySplit: 1 }];
+
+  // ── Перерасход ───────────────────────────────────────────────────────────
+  const overrunSheet = wb.addWorksheet('Перерасход');
+  styleHeader(
+    overrunSheet.addRow([
+      'Этаж', 'Конструктив', 'Материал', 'Ед.', 'Проект', 'К норм', 'Проект × К', 'Приход',
+      'К факт', 'Приход − проект × К', 'Перерасход, ₽', 'Оценка',
+    ]),
+  );
+  for (const l of overrunLines) {
+    overrunSheet.addRow([
+      l.tier.name,
+      l.structure ? l.structure.name : 'этаж целиком',
+      l.material.name,
+      l.material.unit,
+      l.project,
+      l.k,
+      l.projectWithK,
+      l.incoming,
+      l.kActual,
+      l.overrun,
+      l.overrun > 0 ? l.cost : null,
+      l.verdict,
+    ]);
+  }
+  autoWidth(overrunSheet, [34, 34, 26, 6, 10, 8, 12, 10, 8, 16, 14, 12]);
+  overrunSheet.views = [{ state: 'frozen', ySplit: 1 }];
 
   // ── Журнал заливок ───────────────────────────────────────────────────────
   const poursSheet = wb.addWorksheet('Журнал заливок');
@@ -325,8 +344,8 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
     ['База сравнения', 'Самая точная из доступных: рабочая документация (КЖ) → действующий ДС → смета. Где КЖ не выпущен, база оценочная и помечена в интерфейсе.'],
     ['Списание бетона', 'Бетон не складируется: списание — это привязка ТТН к захватке. Историю до пилота дают закрытые объёмы КС-6а; запись за месяц не создаётся там, где уже есть привязанные ТТН.'],
     ['Списание арматуры', 'Приход по диаметрам вводится сразу на конструктив — это и есть списание. Оси — в примечании прихода.'],
-    ['К факт', 'Списано, делённое на выполненную часть базы. Для бетона выполненная часть — проектный объём залитых захваток, для арматуры — проектная масса, приходящаяся на забетонированную долю.'],
-    ['Прогноз', 'Списано + (вся база − выполнено) × К факт. При выполнении меньше 10% прогноз помечается предварительным: коэффициент ещё не показателен.'],
+    ['Перерасход', 'Как в листе «приходы»: привезено по ТТН минус проект × К — по каждому блоку, куда разносился приход (на КЖ0 и 1-м этаже — по этажу целиком). Проект — последний выпуск КЖ (КЖ1 изм. 8). Арматура — по диаметрам. Сумма по материалу — только блоки с перерасходом: экономия на одном блоке не гасит перерасход на другом. Рост ДС к смете перерасходом не считается.'],
+    ['К факт', 'Приход по ТТН, делённый на проект блока.'],
     ['Перерасход в рублях', 'Считается по себестоимости из ресурсной (бетон В25 7508, В30 7823 ₽/м³; арматура 54 000 ₽/т) — это реальная потеря подрядчика, а не договорная цена.'],
     ['Не подтверждено', 'Приход минус списание минус склад. У бетона это поставки, не привязанные ни к одной конструкции; у арматуры всегда ноль, потому что непривязанное лежит на складе.'],
     ['Смена класса бетона', 'Плита ЛПК проходила как В25 до ДС3 и как В30 начиная с ДС3. Сметный лимит такого конструктива переезжает в новый класс: «Смета (лимит)» по В30 равна 9397,4 м³ (7661,4 по ресурсной плюс 1736 переехавших), по В25 — 384,7 м³. Колонка «Смета по ресурсной» сохраняет исходные 7661,4 и 2120,7 для сверки; сумма по всем классам в обоих разрезах одна и та же — 10 125,3 м³.'],

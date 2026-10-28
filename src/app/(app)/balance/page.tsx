@@ -1,5 +1,6 @@
 import { buildReport, type Cell } from '@/lib/report';
-import { coeff, money, num, percent, signed } from '@/lib/format';
+import { buildOverrun, overrunByMaterial } from '@/lib/overrun';
+import { coeff, money, num, signed } from '@/lib/format';
 import { BasisBadge, Card, Empty, VerdictBadge } from '@/components/ui';
 import Link from 'next/link';
 import { canView, requirePage } from '@/lib/auth';
@@ -11,6 +12,7 @@ export const metadata = { title: 'Остаточная таблица — Стр
 export default async function BalancePage() {
   const user = await requirePage('balance');
   const report = await buildReport();
+  const overrunOf = overrunByMaterial(buildOverrun(report));
 
   const concrete = report.totals.filter((c) => c.material.kind === 'concrete');
   const rebarAggregate = report.totals.filter(
@@ -25,7 +27,7 @@ export default async function BalancePage() {
       <div>
         <h1 className="text-lg font-semibold text-slate-900">Остаточная таблица</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
-          Замена листа «приходы»: к приходу добавлены списание, складской остаток и прогноз.
+          Замена листа «приходы»: к приходу добавлены списание, складской остаток и перерасход — привезено сверх проекта × К по блокам, как в листе.
           Прежняя таблица считала остаток как «смета минус приход», что не является складским
           остатком и не показывает перерасход.
           {canView(user, 'tiers') ? (
@@ -43,27 +45,29 @@ export default async function BalancePage() {
         title="Бетон"
         hint="Бетон не складируется: списание — это привязка ТТН к захватке либо закрытый объём по КС-6а."
       >
-        <BalanceTable rows={concrete} />
+        <BalanceTable rows={concrete} overrunOf={overrunOf} />
       </Card>
 
       <Card
         title="Арматура"
-        hint="Приход ведётся по диаметрам, сравнение со сметой — общим тоннажом: смета арматуру по диаметрам не расписывает."
+        hint="Приход ведётся по диаметрам, смета — общим тоннажом: по диаметрам она арматуру не расписывает. Перерасход здесь — по общему тоннажу блока; по диаметрам — в таблице ниже."
       >
-        <BalanceTable rows={rebarAggregate} />
+        <BalanceTable rows={rebarAggregate} overrunOf={overrunOf} />
       </Card>
 
       <Card
         title="Арматура по диаметрам — склад"
-        hint="Актов монтажа в разрезе диаметров нет: КС-6а закрывает арматуру общим тоннажом. Поэтому здесь только приход, склад и проектная потребность по КЖ, без прогноза."
+        hint="Актов монтажа в разрезе диаметров нет: КС-6а закрывает арматуру общим тоннажом. Перерасход — привезено сверх проекта × К по блокам, где диаметр есть в КЖ."
       >
-        <SkuTable rows={rebarSkus} />
+        <SkuTable rows={rebarSkus} overrunOf={overrunOf} />
       </Card>
     </div>
   );
 }
 
-function BalanceTable({ rows }: { rows: Cell[] }) {
+type OverrunOf = ReturnType<typeof overrunByMaterial>;
+
+function BalanceTable({ rows, overrunOf }: { rows: Cell[]; overrunOf: OverrunOf }) {
   if (rows.length === 0) return <Empty>Нет данных</Empty>;
 
   return (
@@ -80,10 +84,7 @@ function BalanceTable({ rows }: { rows: Cell[] }) {
             <th>Списано</th>
             <th>Склад</th>
             <th>Неподтв.</th>
-            <th>Вып., %</th>
             <th>К&nbsp;норм</th>
-            <th>К&nbsp;факт</th>
-            <th>Прогноз</th>
             <th>Перерасход</th>
             <th>В рублях</th>
             <th>Оценка</th>
@@ -131,42 +132,22 @@ function BalanceTable({ rows }: { rows: Cell[] }) {
               <td className={c.balance.unconfirmed > 0.01 ? 'font-medium text-red-700' : undefined}>
                 {num(c.balance.unconfirmed)}
               </td>
-              <td>{percent(c.forecast.progress)}</td>
               <td>{coeff(c.k)}</td>
-              <td
-                className={
-                  c.forecast.verdict === 'over'
-                    ? 'font-medium text-red-700'
-                    : c.forecast.verdict === 'warning'
-                      ? 'font-medium text-amber-700'
-                      : undefined
-                }
-              >
-                {coeff(c.forecast.kActual)}
-                {c.forecast.confidence === 'preliminary' && c.forecast.kActual != null ? (
-                  <span title="Выполнено меньше 10% — коэффициент ещё не показателен"> *</span>
-                ) : null}
-              </td>
-              <td>{num(c.forecast.total)}</td>
-              <td>{signed(c.forecast.overrunVsEstimate)}</td>
-              <td>{money(c.forecast.overrunCost)}</td>
-              <td>
-                <VerdictBadge verdict={c.forecast.verdict} />
-              </td>
+              <OverrunCells o={overrunOf.get(c.material.id)} />
             </tr>
           ))}
         </tbody>
       </table>
       <p className="mt-2 text-xs text-slate-500">
-        Звёздочка у К&nbsp;факт — прогноз предварительный: выполнено меньше 10% объёма.
-        «Неподтв.» — приход, не привязанный ни к одной конструкции. Значение в скобках
+        Перерасход — сумма по блокам, где привезено больше проекта × К; экономия на других
+        блоках его не гасит. «Неподтв.» — приход, не привязанный ни к одной конструкции. Значение в скобках
         у сметы — лимит по ресурсной до переезда конструктивов между классами бетона.
       </p>
     </div>
   );
 }
 
-function SkuTable({ rows }: { rows: Cell[] }) {
+function SkuTable({ rows, overrunOf }: { rows: Cell[]; overrunOf: OverrunOf }) {
   if (rows.length === 0) return <Empty>Нет данных</Empty>;
 
   return (
@@ -181,6 +162,9 @@ function SkuTable({ rows }: { rows: Cell[] }) {
             <th>Приход</th>
             <th>Списано</th>
             <th>Склад</th>
+            <th>Перерасход</th>
+            <th>В рублях</th>
+            <th>Оценка</th>
           </tr>
         </thead>
         <tbody>
@@ -193,10 +177,34 @@ function SkuTable({ rows }: { rows: Cell[] }) {
               <td>{num(c.balance.incoming)}</td>
               <td>{num(c.balance.consumed)}</td>
               <td>{num(c.balance.stock)}</td>
+              <OverrunCells o={overrunOf.get(c.material.id)} />
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function OverrunCells({ o }: { o: ReturnType<OverrunOf['get']> }) {
+  if (!o) {
+    return (
+      <>
+        <td>—</td>
+        <td>—</td>
+        <td>
+          <VerdictBadge verdict="unknown" />
+        </td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td className={o.overrun > 0 ? 'font-medium text-red-700' : undefined}>{o.overrun > 0 ? signed(o.overrun) : '—'}</td>
+      <td>{o.overrun > 0 ? money(o.cost) : '—'}</td>
+      <td>
+        <VerdictBadge verdict={o.verdict} />
+      </td>
+    </>
   );
 }
