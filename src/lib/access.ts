@@ -6,7 +6,7 @@ export const SECTIONS = [
   // nav: false — в шапке нет, страница открывается по ссылкам из других разделов.
   { key: 'dashboard', label: 'Контроль: прогноз', href: '/dashboard', hint: 'перерасход и прогноз по конструктивам', nav: false },
   { key: 'deliveries', label: 'Приход и списание', href: '/deliveries', hint: 'поставки сразу на конструктив' },
-  { key: 'pours', label: 'Журнал', caption: 'бетонных работ', href: '/pours', hint: 'журнал бетонных работ: заливки и выполнение конструктивов' },
+  { key: 'pours', label: 'Журнал', href: '/pours', hint: 'журнал бетонных работ: заливки и выполнение конструктивов' },
   { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»', nav: false },
   { key: 'closings', label: 'Выполнение', href: '/closings', hint: 'закрытие по КС-6а' },
   { key: 'balance', label: 'Остатки', href: '/balance', hint: 'склад и остаточная таблица' },
