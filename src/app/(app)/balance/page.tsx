@@ -1,14 +1,15 @@
 import { buildReport, type Cell } from '@/lib/report';
 import { coeff, money, num, percent, signed } from '@/lib/format';
 import { BasisBadge, Card, Empty, VerdictBadge } from '@/components/ui';
-import { requirePage } from '@/lib/auth';
+import Link from 'next/link';
+import { canView, requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Остаточная таблица — СтройКонтроль' };
 
 export default async function BalancePage() {
-  await requirePage('balance');
+  const user = await requirePage('balance');
   const report = await buildReport();
 
   const concrete = report.totals.filter((c) => c.material.kind === 'concrete');
@@ -27,6 +28,14 @@ export default async function BalancePage() {
           Замена листа «приходы»: к приходу добавлены списание, складской остаток и прогноз.
           Прежняя таблица считала остаток как «смета минус приход», что не является складским
           остатком и не показывает перерасход.
+          {canView(user, 'tiers') ? (
+            <>
+              {' '}
+              <Link href="/tiers" className="text-sky-700 underline">
+                Разрез по этажам →
+              </Link>
+            </>
+          ) : null}
         </p>
       </div>
 

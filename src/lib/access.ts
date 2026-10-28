@@ -2,17 +2,18 @@
 // Без обращений к БД — используется и в серверном коде, и в формах.
 
 export const SECTIONS = [
-  { key: 'control', label: 'Контроль', href: '/control', hint: 'выполнение и защита объёмов, сводка по смете' },
-  { key: 'dashboard', label: 'Прогноз', href: '/dashboard', hint: 'перерасход и прогноз по конструктивам' },
+  { key: 'control', label: 'Контроль: выполнение и защита', href: '/control', hint: 'выполнение и защита объёмов, сводка по смете' },
+  // nav: false — в шапке нет, страница открывается по ссылкам из других разделов.
+  { key: 'dashboard', label: 'Контроль: прогноз', href: '/dashboard', hint: 'перерасход и прогноз по конструктивам', nav: false },
   { key: 'deliveries', label: 'Приход и списание', href: '/deliveries', hint: 'поставки сразу на конструктив' },
   { key: 'pours', label: 'Журнал', caption: 'бетонных работ', href: '/pours', hint: 'журнал бетонных работ: заливки и выполнение конструктивов' },
-  { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»' },
+  { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»', nav: false },
   { key: 'closings', label: 'Выполнение', href: '/closings', hint: 'закрытие по КС-6а' },
   { key: 'balance', label: 'Остатки', href: '/balance', hint: 'склад и остаточная таблица' },
   { key: 'structures', label: 'Конструктивы', href: '/structures', hint: 'дерево договора с базами' },
-  { key: 'revisions', label: 'Редакции', href: '/revisions', hint: 'ДС и выпуски КЖ' },
+  { key: 'revisions', label: 'Редакции', href: '/revisions', hint: 'ДС и выпуски КЖ', nav: false },
   { key: 'export', label: 'Выгрузка в Excel', href: '/api/export', hint: 'скачать всё в xlsx' },
-  { key: 'users', label: 'Учётные записи', href: '/users', hint: 'пользователи и роли — права администратора' },
+  { key: 'users', label: 'Учётные записи', href: '/users', hint: 'пользователи и роли — права администратора', nav: false },
 ] as const;
 
 export type Section = (typeof SECTIONS)[number]['key'];

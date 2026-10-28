@@ -7,6 +7,7 @@ import { buildReport } from '@/lib/report';
 import { coeff, money, moneyShort, n, num, percent, signed } from '@/lib/format';
 import { Card, Empty, Stat, VerdictBadge } from '@/components/ui';
 import { ProtectionTable } from '@/components/protection';
+import { ControlTabs } from '@/components/control-tabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ const monthLabel = (ym: string) =>
   new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 export default async function ControlPage() {
-  await requirePage('control');
+  const user = await requirePage('control');
   const [{ rows, tiers }, report, pourRows, closingRows, materialRows] = await Promise.all([
     buildProtection(),
     buildReport(),
@@ -62,7 +63,8 @@ export default async function ControlPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Контроль выполнения и защиты</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Контроль</h1>
+        <ControlTabs user={user} active="control" />
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
           Прораб отмечает выполнение конструктива, сметчик закрывает его процентовкой. Объём,
           выполненный в месяце, должен быть защищён в процентовке этого же месяца — всё, что

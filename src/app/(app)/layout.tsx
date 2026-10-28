@@ -4,13 +4,22 @@ import { canView, currentUser } from '@/lib/auth';
 import { SECTIONS } from '@/lib/access';
 import { logout } from '@/actions/auth';
 
-// Выгрузка — кнопка справа, а не пункт меню.
-const NAV = SECTIONS.filter((s) => s.key !== 'export');
+// Выгрузка и учётные записи — справа, а не в меню; часть разделов открывается
+// по ссылкам изнутри (nav: false).
+const NAV = SECTIONS.filter((s) => s.key !== 'export' && !('nav' in s && s.nav === false));
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
   if (!user) redirect('/login');
-  const nav = NAV.filter((item) => canView(user, item.key));
+  // «Контроль» объединяет две страницы вкладками: пункт есть, если видна хоть одна.
+  const nav: { label: string; href: string; caption?: string }[] = NAV.flatMap((item) => {
+    if (item.key === 'control') {
+      const href = canView(user, 'control') ? '/control' : canView(user, 'dashboard') ? '/dashboard' : null;
+      return href ? [{ label: 'Контроль', href }] : [];
+    }
+    if (!canView(user, item.key)) return [];
+    return [{ label: item.label, href: item.href, caption: 'caption' in item ? item.caption : undefined }];
+  });
 
   return (
     <div className="min-h-screen">
@@ -24,11 +33,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                title={'caption' in item ? `${item.label} ${item.caption}` : undefined}
+                title={item.caption ? `${item.label} ${item.caption}` : undefined}
                 className="rounded px-2.5 py-1 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               >
                 {item.label}
-                {'caption' in item ? (
+                {item.caption ? (
                   <span className="block text-[10px] leading-none text-slate-400">{item.caption}</span>
                 ) : null}
               </Link>
@@ -43,6 +52,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </a>
           ) : null}
           <div className="flex items-center gap-3 text-xs text-slate-500">
+            {canView(user, 'users') ? (
+              <Link href="/users" className="hover:text-slate-900">
+                Учётные записи
+              </Link>
+            ) : null}
             <Link href="/account" className="hover:text-slate-900" title="Сменить пароль">
               {user.name} · {user.roleName}
             </Link>

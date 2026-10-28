@@ -2,14 +2,15 @@ import Link from 'next/link';
 import { buildReport } from '@/lib/report';
 import { coeff, money, moneyShort, num, percent, signed } from '@/lib/format';
 import { Card, Empty, Stat, VerdictBadge } from '@/components/ui';
-import { requirePage } from '@/lib/auth';
+import { canView, requirePage } from '@/lib/auth';
+import { ControlTabs } from '@/components/control-tabs';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Дашборд — СтройКонтроль' };
+export const metadata = { title: 'Прогноз — СтройКонтроль' };
 
 export default async function DashboardPage() {
-  await requirePage('dashboard');
+  const user = await requirePage('dashboard');
   const report = await buildReport();
 
   const tracked = report.totals.filter(
@@ -64,7 +65,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Дашборд</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Контроль</h1>
+        <ControlTabs user={user} active="dashboard" />
         <p className="mt-1 text-sm text-slate-600">
           Данные на {report.generatedAt.toLocaleString('ru-RU')}.
         </p>
@@ -186,16 +188,20 @@ export default async function DashboardPage() {
         <p className="mt-3 text-sm text-slate-600">
           Разнести приход —{' '}
           <Link href="/deliveries" className="text-sky-700 underline">
-            Приходы
+            Приход и списание
           </Link>
           , закрыть месяц —{' '}
           <Link href="/closings" className="text-sky-700 underline">
-            Процентовка
+            Выполнение
           </Link>
-          , сверка по этажам —{' '}
-          <Link href="/tiers" className="text-sky-700 underline">
-            Этажи
-          </Link>
+          {canView(user, 'tiers') ? (
+            <>
+              , сверка по этажам —{' '}
+              <Link href="/tiers" className="text-sky-700 underline">
+                Этажи
+              </Link>
+            </>
+          ) : null}
           .
         </p>
       </Card>

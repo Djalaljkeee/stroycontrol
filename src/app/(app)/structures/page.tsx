@@ -2,14 +2,15 @@ import { Fragment } from 'react';
 import { buildReport } from '@/lib/report';
 import { coeff, money, num, percent, signed } from '@/lib/format';
 import { BasisBadge, Card, VerdictBadge } from '@/components/ui';
-import { requirePage } from '@/lib/auth';
+import Link from 'next/link';
+import { canView, requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Конструктивы — СтройКонтроль' };
 
 export default async function StructuresPage() {
-  await requirePage('structures');
+  const user = await requirePage('structures');
   const report = await buildReport();
 
   return (
@@ -20,6 +21,14 @@ export default async function StructuresPage() {
           База сравнения подбирается по принципу «самая точная из доступных»: рабочая документация,
           затем действующий ДС, затем смета. Где КЖ ещё не выпущен, база помечена серым — она
           оценочная.
+          {canView(user, 'revisions') ? (
+            <>
+              {' '}
+              <Link href="/revisions" className="text-sky-700 underline">
+                Редакции ДС и выпусков КЖ →
+              </Link>
+            </>
+          ) : null}
         </p>
       </div>
 
