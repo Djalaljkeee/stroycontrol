@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { buildReport } from '@/lib/report';
-import { coeff, money, num, percent, signed } from '@/lib/format';
-import { BasisBadge, Card, VerdictBadge } from '@/components/ui';
+import { num, percent, signed } from '@/lib/format';
+import { BasisBadge, Card } from '@/components/ui';
 import Link from 'next/link';
 import { canView, requirePage } from '@/lib/auth';
 
@@ -18,9 +18,10 @@ export default async function StructuresPage() {
       <div>
         <h1 className="text-lg font-semibold text-slate-900">Конструктивы</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
-          База сравнения подбирается по принципу «самая точная из доступных»: рабочая документация,
-          затем действующий ДС, затем смета. Где КЖ ещё не выпущен, база помечена серым — она
-          оценочная.
+          Объём по конструктивам для заявки на приход: сколько нужно по проекту, сколько уже пришло
+          и сколько довезти. Проект берётся из самого точного источника — рабочей документации, затем
+          действующего ДС, затем сметы; где КЖ ещё не выпущен, источник помечен серым — объём
+          оценочный.
           {canView(user, 'revisions') ? (
             <>
               {' '}
@@ -40,16 +41,11 @@ export default async function StructuresPage() {
                 <th>Конструктив</th>
                 <th>Материал</th>
                 <th>База</th>
-                <th>Объём базы</th>
+                <th>Проект</th>
                 <th>Смета</th>
                 <th>Приход</th>
                 <th>Списано</th>
-                <th>Вып., %</th>
-                <th>К&nbsp;факт</th>
-                <th>Прогноз</th>
-                <th>Перерасход</th>
-                <th>В рублях</th>
-                <th>Оценка</th>
+                <th>Довезти</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +58,7 @@ export default async function StructuresPage() {
                   <Fragment key={s.id}>
                     <tr className="bg-slate-50">
                       <td
-                        colSpan={13}
+                        colSpan={8}
                         style={{ paddingLeft: `${0.6 + s.depth * 1.1}rem` }}
                         className="font-medium text-slate-800"
                       >
@@ -78,33 +74,39 @@ export default async function StructuresPage() {
                         ) : null}
                       </td>
                     </tr>
-                    {rows.map((c) => (
-                      <tr key={`c-${s.id}-${c.material.id}`} className={c.superseded ? 'text-slate-400' : undefined}>
-                        <td style={{ paddingLeft: `${1.6 + s.depth * 1.1}rem` }} />
-                        <td className="text-left">{c.material.name}</td>
-                        <td>
-                          <BasisBadge
-                            source={c.base?.source}
-                            revision={c.base?.revision}
-                            estimated={c.base?.isEstimated}
-                          />
-                        </td>
-                        <td>
-                          {num(c.basePurchase)} {c.material.unit}
-                        </td>
-                        <td>{num(c.estimatePurchase)}</td>
-                        <td>{num(c.balance.incoming)}</td>
-                        <td>{num(c.balance.consumed)}</td>
-                        <td>{percent(c.forecast.progress)}</td>
-                        <td>{coeff(c.forecast.kActual)}</td>
-                        <td>{num(c.forecast.total)}</td>
-                        <td>{signed(c.forecast.overrunVsEstimate)}</td>
-                        <td>{money(c.forecast.overrunCost)}</td>
-                        <td>
-                          <VerdictBadge verdict={c.forecast.verdict} />
-                        </td>
-                      </tr>
-                    ))}
+                    {rows.map((c) => {
+                      // Проект — уже закупочный объём (с коэффициентом расхода): сравнивается с приходом напрямую.
+                      const toDeliver = c.basePurchase != null ? c.basePurchase - c.balance.incoming : null;
+                      return (
+                        <tr key={`c-${s.id}-${c.material.id}`} className={c.superseded ? 'text-slate-400' : undefined}>
+                          <td style={{ paddingLeft: `${1.6 + s.depth * 1.1}rem` }} />
+                          <td className="text-left">{c.material.name}</td>
+                          <td>
+                            <BasisBadge
+                              source={c.base?.source}
+                              revision={c.base?.revision}
+                              estimated={c.base?.isEstimated}
+                            />
+                          </td>
+                          <td>
+                            {num(c.basePurchase)} {c.material.unit}
+                          </td>
+                          <td>{num(c.estimatePurchase)}</td>
+                          <td>{num(c.balance.incoming)}</td>
+                          <td>{num(c.balance.consumed)}</td>
+                          <td
+                            className={toDeliver != null && toDeliver < -0.005 ? 'text-red-700' : 'font-medium'}
+                            title={toDeliver != null && toDeliver < -0.005 ? 'Привезено больше проекта' : undefined}
+                          >
+                            {toDeliver == null || Math.abs(toDeliver) <= 0.005
+                              ? '—'
+                              : toDeliver > 0
+                                ? `${num(toDeliver)} ${c.material.unit}`
+                                : `перевезено ${signed(-toDeliver)}`}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </Fragment>
                 );
               })}
