@@ -19,14 +19,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Link href={user.home} className="shrink-0" title="СтройКонтроль">
             <img src="/logo.svg" alt="СтройКонтроль" width={135} height={20} className="h-5 w-auto" />
           </Link>
-          <nav className="flex flex-1 flex-wrap gap-1">
+          <nav className="flex flex-1 flex-wrap items-center gap-1">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
+                title={'caption' in item ? `${item.label} ${item.caption}` : undefined}
                 className="rounded px-2.5 py-1 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               >
                 {item.label}
+                {'caption' in item ? (
+                  <span className="block text-[10px] leading-none text-slate-400">{item.caption}</span>
+                ) : null}
               </Link>
             ))}
           </nav>

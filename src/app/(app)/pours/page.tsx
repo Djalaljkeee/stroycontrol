@@ -15,7 +15,7 @@ import { StatusControl } from './status';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Выполнение — СтройКонтроль' };
+export const metadata = { title: 'Журнал бетонных работ — СтройКонтроль' };
 
 export default async function PoursPage() {
   const user = await requirePage('pours');
@@ -59,7 +59,7 @@ export default async function PoursPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Выполнение</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Журнал бетонных работ</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
           Когда конструктив забетонирован, отметьте выполнение — с этой даты объём ждёт защиты в
           процентовке, и руководитель видит, что закрыть.
