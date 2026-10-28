@@ -16,8 +16,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-5 py-2.5">
-          <Link href={user.home} className="text-sm font-semibold text-slate-900">
-            СтройКонтроль
+          <Link href={user.home} className="shrink-0" title="СтройКонтроль">
+            <img src="/logo.svg" alt="СтройКонтроль" width={135} height={20} className="h-5 w-auto" />
           </Link>
           <nav className="flex flex-1 flex-wrap gap-1">
             {nav.map((item) => (

@@ -9,7 +9,9 @@ export default async function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-sm">
-        <h1 className="text-xl font-semibold text-slate-900">СтройКонтроль</h1>
+        <h1>
+          <img src="/logo.svg" alt="СтройКонтроль" width={175} height={26} className="h-7 w-auto" />
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Учёт расхода бетона и арматуры. Лабораторно-производственный корпус, Зеленоград.
         </p>
