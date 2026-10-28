@@ -56,7 +56,7 @@ export default async function ControlPage() {
 
   const groups = [
     ...tiers.map((t) => ({ key: t.code, name: t.name, rows: rows.filter((r) => r.tierId === t.id) })),
-    { key: 'none', name: 'Строки КС-6а без яруса', rows: rows.filter((r) => r.tierId == null) },
+    { key: 'none', name: 'Строки КС-6а без этажа', rows: rows.filter((r) => r.tierId == null) },
   ].filter((g) => g.rows.length > 0);
 
   return (
@@ -186,7 +186,7 @@ export default async function ControlPage() {
         </Card>
       </div>
 
-      <Card title="По ярусам" hint="Раскройте ярус, чтобы увидеть каждый конструктив.">
+      <Card title="По этажам" hint="Раскройте этаж, чтобы увидеть каждый конструктив.">
         <div className="space-y-2">
           {groups.map((g) => {
             const gp = g.rows.filter((r) => r.project != null);

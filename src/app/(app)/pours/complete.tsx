@@ -13,7 +13,7 @@ export function CompleteForm({
 }) {
   return (
     <ActionForm action={completeStructure} submitLabel="Отметить выполнение">
-      <Field label="Конструктив" hint="Захватки сгруппированы по ярусам">
+      <Field label="Конструктив" hint="Захватки сгруппированы по этажам">
         <TargetSelect name="target" defaultValue="" groups={targets} placeholder="Выберите конструктив" />
       </Field>
       <Field label="Дата окончания">

@@ -166,7 +166,7 @@ async function main() {
   }
   console.log(`  цены: себестоимость ${costPrice.size}, договорные ${contractPrice.size} позиций`);
 
-  console.log('\n=== 2. Ярусы и конструктивы ===');
+  console.log('\n=== 2. Этажи и конструктивы ===');
 
   const tierId = new Map<string, number>();
   const tierSpec = new Map(mapping.tiers.map((t) => [t.code, t]));
@@ -188,7 +188,7 @@ async function main() {
       .returning({ id: tiers.id });
     tierId.set(t.code, row.id);
   }
-  console.log(`  ярусов: ${tierId.size}`);
+  console.log(`  этажей: ${tierId.size}`);
 
   const structureId = new Map<string, number>();
   const structureTier = new Map<string, string | null>();
@@ -204,7 +204,7 @@ async function main() {
   }) => {
     const parentId = v.parent ? (structureId.get(v.parent) ?? null) : null;
     const tid = v.tier ? (tierId.get(v.tier) ?? null) : null;
-    if (v.tier && tid == null) warnings.push(`Ярус ${v.tier} не описан (${v.code})`);
+    if (v.tier && tid == null) warnings.push(`Этаж ${v.tier} не описан (${v.code})`);
     const set = {
       name: v.name,
       kind: v.kind,
@@ -478,7 +478,7 @@ async function main() {
         const target = s.closingBlocks?.[f.date] ?? s.code;
         const tier = structureTier.get(target) ?? null;
         if (s.blocks?.length && !s.closingBlocks?.[f.date]) {
-          warnings.push(`Процентовка ${s.code} за ${f.date}: не указана захватка яруса (closingBlocks)`);
+          warnings.push(`Процентовка ${s.code} за ${f.date}: не указана захватка этажа (closingBlocks)`);
         }
         // У стяжки нет строки работ в м3: конструктивный объём — закупка / К.
         const design = isRebar
@@ -508,11 +508,11 @@ async function main() {
             structureId: structureId.get(target)!,
             document: `КС-6а ${currentRev.revision}`,
             source: 'ks6a',
-            note: 'Списание по процентовке: приход яруса не разнесён по конструктивам.',
+            note: 'Списание по процентовке: приход этажа не разнесён по конструктивам.',
           });
           proxyCount++;
         } else if (!tier) {
-          warnings.push(`Процентовка ${target} за ${f.date}: конструктив без яруса`);
+          warnings.push(`Процентовка ${target} за ${f.date}: конструктив без этажа`);
         }
       }
     }
@@ -532,7 +532,7 @@ async function main() {
     mapping.deliveryBlocks.headers.map((h) => [normalizeName(h.header), h.target]),
   );
   const describe = (t: DeliveryTarget) =>
-    t == null ? 'вне охвата' : 'structure' in t ? t.structure : `ярус ${t.tier}`;
+    t == null ? 'вне охвата' : 'structure' in t ? t.structure : `этаж ${t.tier}`;
 
   let target: DeliveryTarget = mapping.deliveryBlocks.initial;
   let deliveryCount = 0;

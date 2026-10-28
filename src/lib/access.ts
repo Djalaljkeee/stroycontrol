@@ -7,7 +7,7 @@ export const SECTIONS = [
   { key: 'deliveries', label: 'Приходы', href: '/deliveries', hint: 'реестр поставок' },
   { key: 'pours', label: 'Выполнение', href: '/pours', hint: 'заливки и выполнение конструктивов' },
   { key: 'issues', label: 'Списания', href: '/issues', hint: 'акты монтажа арматуры' },
-  { key: 'tiers', label: 'Ярусы', href: '/tiers', hint: 'разрез как лист «приходы»' },
+  { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»' },
   { key: 'closings', label: 'Процентовка', href: '/closings', hint: 'закрытие по КС-6а' },
   { key: 'balance', label: 'Остатки', href: '/balance', hint: 'склад и остаточная таблица' },
   { key: 'structures', label: 'Конструктивы', href: '/structures', hint: 'дерево договора с базами' },

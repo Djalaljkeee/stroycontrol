@@ -113,7 +113,7 @@ export default async function DeliveriesPage() {
       <div>
         <h1 className="text-lg font-semibold text-slate-900">Приходы</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
-          Каждая поставка разносится туда же, куда в листе «приходы»: на ярус и блок — колонны,
+          Каждая поставка разносится туда же, куда в листе «приходы»: на этаж и блок — колонны,
           стены, плиту, лестницы. Бетон разносится сразу при вводе — склада у него нет, приход и
           есть расход. Арматуру можно принять на склад и разнести позже.
         </p>
@@ -132,7 +132,7 @@ export default async function DeliveriesPage() {
       {unallocated.length > 0 ? (
         <Card
           title={`Бетон без разнесения — ${num(unallocatedTotal)} м³`}
-          hint="Пока поставка не разнесена ни на ярус, ни на конструктив, она числится неподтверждённым расходом."
+          hint="Пока поставка не разнесена ни на этаж, ни на конструктив, она числится неподтверждённым расходом."
         >
           {allocationTable(unallocated)}
         </Card>
@@ -140,7 +140,7 @@ export default async function DeliveriesPage() {
 
       {refinable.length > 0 ? (
         <Card
-          title="Разнесено на ярус без разбивки"
+          title="Разнесено на этаж без разбивки"
           hint="Уточните конструктив, когда сверите ТТН с захватками — тогда приход попадёт в К_факт конкретного блока."
         >
           {allocationTable(refinable)}

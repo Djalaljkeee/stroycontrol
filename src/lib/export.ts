@@ -170,10 +170,10 @@ export async function buildWorkbook(): Promise<ExcelJS.Workbook> {
   poursSheet.views = [{ state: 'frozen', ySplit: 1 }];
 
   // ── Ярусы — тот же разрез, что лист «приходы» ───────────────────────────
-  const tierSheet = wb.addWorksheet('Ярусы');
+  const tierSheet = wb.addWorksheet('Этажи');
   styleHeader(
     tierSheet.addRow([
-      'Ярус / конструктив', 'Позиция', 'Ед.', 'Проект', 'Выпуск КЖ', 'Проект × К', 'Приход',
+      'Этаж / конструктив', 'Позиция', 'Ед.', 'Проект', 'Выпуск КЖ', 'Проект × К', 'Приход',
       'Приход − норма', 'Запроцентовано', 'Не запроцентовано',
     ]),
   );

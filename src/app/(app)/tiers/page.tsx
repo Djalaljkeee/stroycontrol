@@ -5,7 +5,7 @@ import { requirePage } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Ярусы — СтройКонтроль' };
+export const metadata = { title: 'Этажи — СтройКонтроль' };
 
 /** Сначала бетон по классам, затем арматура общей позицией: так устроен лист «приходы». */
 const isHeadline = (m: MaterialInfo) => m.kind === 'concrete' || m.isAggregate;
@@ -22,7 +22,7 @@ function RowsTable({ rows, showSku }: { rows: TierRow[]; showSku: boolean }) {
           <th title="Конструктивный объём по последнему выпуску КЖ">Проект</th>
           <th title="Проект × нормативный К расхода — сколько должно быть привезено">Проект × К</th>
           <th>Приход</th>
-          <th title="Приход / проект: фактический К расхода по ярусу">К прихода</th>
+          <th title="Приход / проект: фактический К расхода по этажу">К прихода</th>
           <th title="Приход − проект × К: + перевезли, − ещё довезти">Приход − норма</th>
           <th>Запроцентовано</th>
           <th title="Привезено, но ещё не закрыто перед заказчиком">Не запроцентовано</th>
@@ -68,9 +68,9 @@ export default async function TiersPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Ярусы</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Этажи</h1>
         <p className="mt-1 max-w-4xl text-sm text-slate-600">
-          То же, что лист «приходы»: по каждому ярусу — проект, проект с коэффициентом, приход и
+          То же, что лист «приходы»: по каждому этажу — проект, проект с коэффициентом, приход и
           запроцентованное, внутри — блоки «колонны / стены / плита / лестницы». Приход попадает
           сюда разнесением на странице «Приходы», процентовка — со страницы «Процентовка».
         </p>
@@ -89,7 +89,7 @@ export default async function TiersPage() {
 
       {unallocated.length > 0 ? (
         <Card
-          title="Приход, не разнесённый ни на ярус, ни на конструктив"
+          title="Приход, не разнесённый ни на этаж, ни на конструктив"
           hint="Бетон без разнесения числится неподтверждённым расходом, арматура — складом. Разнести — на странице «Приходы»."
         >
           <ul className="text-sm text-slate-700">
@@ -119,12 +119,12 @@ export default async function TiersPage() {
               title={`${t.tier.name} · ${range}`}
               hint={
                 t.tier.consumptionFromClosings
-                  ? 'Приход по ярусу исторически не делился по конструктивам: расход здесь считается по процентовке.'
+                  ? 'Приход по этажу исторически не делился по конструктивам: расход здесь считается по процентовке.'
                   : undefined
               }
             >
               {t.rows.length === 0 ? (
-                <Empty>По ярусу нет ни проекта, ни прихода.</Empty>
+                <Empty>По этажу нет ни проекта, ни прихода.</Empty>
               ) : (
                 <div className="space-y-4 overflow-x-auto">
                   <RowsTable rows={t.rows} showSku={false} />

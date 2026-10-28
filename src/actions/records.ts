@@ -135,7 +135,7 @@ export async function completeStructure(_prev: ActionState, formData: FormData):
   if (!parsed.success) return fail(parsed.error.issues[0]!.message);
   const v = parsed.data;
   const { structureId } = parseTarget(v.target);
-  if (structureId == null) return fail('Выполнение отмечается на конструктив яруса, а не на ярус целиком');
+  if (structureId == null) return fail('Выполнение отмечается на конструктив этажа, а не на этаж целиком');
 
   const { rows } = await buildProtection();
   const candidates = rows.filter(
@@ -213,7 +213,7 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
     target.tierId == null &&
     canWrite(user, 'allocate')
   ) {
-    return fail('Для бетона укажите конструктив или ярус: без этого поставка попадёт в неподтверждённый расход');
+    return fail('Для бетона укажите конструктив или этаж: без этого поставка попадёт в неподтверждённый расход');
   }
   if (material.kind === 'rebar' && material.isAggregate) {
     return fail('Приход арматуры вводится по конкретному диаметру, а не общей позицией');
@@ -237,7 +237,7 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
   await audit(user.id, 'create', 'delivery', row.id, v);
   revalidateAll();
   const where =
-    target.structureId != null ? 'на конструктив' : target.tierId != null ? 'на ярус' : 'на склад';
+    target.structureId != null ? 'на конструктив' : target.tierId != null ? 'на этаж' : 'на склад';
   return { ok: `Приход ${v.quantity} ${material.unit} записан ${where}` };
 }
 
@@ -299,7 +299,7 @@ export async function createIssue(_prev: ActionState, formData: FormData): Promi
     return fail('Актом монтажа списывается арматура; бетон списывается привязкой ТТН к захватке');
   }
   const { structureId } = parseTarget(v.target);
-  if (structureId == null) return fail('Списание делается на конструктив, а не на ярус целиком');
+  if (structureId == null) return fail('Списание делается на конструктив, а не на этаж целиком');
 
   const [row] = await db
     .insert(issues)
@@ -352,7 +352,7 @@ export async function createClosing(_prev: ActionState, formData: FormData): Pro
   if (!parsed.success) return fail(parsed.error.issues[0]!.message);
   const v = parsed.data;
   const { structureId } = parseTarget(v.target);
-  if (structureId == null) return fail('Процентовка закрывается на конструктив или захватку, а не на ярус');
+  if (structureId == null) return fail('Процентовка закрывается на конструктив или захватку, а не на этаж');
 
   const [material] = await db.select().from(materials).where(eq(materials.id, v.materialId));
   if (!material) return fail('Материал не найден');

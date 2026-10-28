@@ -34,7 +34,7 @@ export async function loadTargetGroups(opts: { includeTiers: boolean }): Promise
   const groups: TargetGroup[] = tierRows.map((t) => ({
     label: t.name,
     options: [
-      ...(opts.includeTiers ? [{ value: `t:${t.id}`, label: `${t.name} — весь ярус, без разбивки` }] : []),
+      ...(opts.includeTiers ? [{ value: `t:${t.id}`, label: `${t.name} — весь этаж, без разбивки` }] : []),
       ...structureRows
         .filter((s) => s.tierId === t.id)
         .map((s) => ({ value: `s:${s.id}`, label: labelOf(s) })),
@@ -43,7 +43,7 @@ export async function loadTargetGroups(opts: { includeTiers: boolean }): Promise
   const loose = structureRows.filter((s) => s.tierId == null && s.kind !== 'object' && s.kind !== 'section');
   if (loose.length > 0) {
     groups.push({
-      label: 'Строки КС-6а без яруса',
+      label: 'Строки КС-6а без этажа',
       options: loose.map((s) => ({ value: `s:${s.id}`, label: `${s.code} — ${s.name}` })),
     });
   }

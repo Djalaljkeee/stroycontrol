@@ -40,7 +40,7 @@ export function IssueForm({
       <Field label="Количество, т">
         <TextInput name="quantity" inputMode="decimal" placeholder="8,84" />
       </Field>
-      <Field label="Конструктив" hint="Захватки сгруппированы по ярусам">
+      <Field label="Конструктив" hint="Захватки сгруппированы по этажам">
         <TargetSelect name="target" defaultValue="" groups={targets} placeholder="Выберите конструктив" />
       </Field>
       <Field label="Заливка" hint="Необязательно: каркас часто вяжут задолго до заливки">

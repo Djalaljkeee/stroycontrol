@@ -20,7 +20,7 @@ export function ClosingForm({
       <Field label="Месяц">
         <TextInput name="month" type="month" defaultValue={new Date().toISOString().slice(0, 7)} />
       </Field>
-      <Field label="Конструктив" hint="Захватка яруса, которую закрываете">
+      <Field label="Конструктив" hint="Захватка этажа, которую закрываете">
         <TargetSelect name="target" defaultValue="" groups={targets} placeholder="Выберите конструктив" />
       </Field>
       <Field label="Материал">
