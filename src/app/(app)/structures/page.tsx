@@ -45,7 +45,7 @@ export default async function StructuresPage() {
                 <th>Смета</th>
                 <th>Приход</th>
                 <th>Списано</th>
-                <th>Довезти</th>
+                <th title="Проект минус привезённое под конструктив: разнесённые ТТН, а где приход шёл на этаж целиком — списанное по КС-6а">Довезти</th>
               </tr>
             </thead>
             <tbody>
@@ -75,8 +75,11 @@ export default async function StructuresPage() {
                       </td>
                     </tr>
                     {rows.map((c) => {
-                      // Проект — уже закупочный объём (с коэффициентом расхода): сравнивается с приходом напрямую.
-                      const toDeliver = c.basePurchase != null ? c.basePurchase - c.balance.incoming : null;
+                      // Проект — уже закупочный объём (с коэффициентом расхода). Привезённое под
+                      // конструктив — разнесённые ТТН, а на этажах, где приход шёл на этаж целиком
+                      // (КЖ0, 1-й), — списанное по КС-6а: приход туда на конструктив не разнесён.
+                      const covered = Math.max(c.balance.incoming, c.balance.consumed);
+                      const toDeliver = c.basePurchase != null ? c.basePurchase - covered : null;
                       return (
                         <tr key={`c-${s.id}-${c.material.id}`} className={c.superseded ? 'text-slate-400' : undefined}>
                           <td style={{ paddingLeft: `${1.6 + s.depth * 1.1}rem` }} />
