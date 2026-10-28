@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { canView, currentUser } from '@/lib/auth';
 import { SECTIONS } from '@/lib/access';
 import { logout } from '@/actions/auth';
+import { MobileMenu } from '@/components/mobile-menu';
 
 // Выгрузка и учётные записи — справа, а не в меню; часть разделов открывается
 // по ссылкам изнутри (nav: false).
@@ -23,12 +24,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-5 py-2.5">
+      <header className="relative border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-3 py-2.5 md:justify-start md:px-5">
           <Link href={user.home} className="shrink-0" title="СтройКонтроль">
             <img src="/logo.svg" alt="СтройКонтроль" width={135} height={20} className="h-5 w-auto" />
           </Link>
-          <nav className="flex flex-1 flex-wrap items-center gap-1">
+          <nav className="hidden flex-1 flex-wrap items-center gap-1 md:flex">
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -46,12 +47,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {canView(user, 'export') ? (
             <a
               href="/api/export"
-              className="rounded border border-slate-300 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-50"
+              className="hidden rounded border border-slate-300 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-50 md:block"
             >
               Выгрузить в Excel
             </a>
           ) : null}
-          <div className="flex items-center gap-3 text-xs text-slate-500">
+          <div className="hidden items-center gap-3 text-xs text-slate-500 md:flex">
             {canView(user, 'users') ? (
               <Link href="/users" className="hover:text-slate-900">
                 Учётные записи
@@ -66,9 +67,42 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               </button>
             </form>
           </div>
+          <MobileMenu>
+            <nav className="flex flex-col py-1">
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded px-2 py-2.5 text-base text-slate-700 active:bg-slate-100"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="mt-1 flex flex-col border-t border-slate-200 pt-2 text-sm text-slate-600">
+              {canView(user, 'export') ? (
+                <a href="/api/export" className="rounded px-2 py-2.5 active:bg-slate-100">
+                  Выгрузить в Excel
+                </a>
+              ) : null}
+              {canView(user, 'users') ? (
+                <Link href="/users" className="rounded px-2 py-2.5 active:bg-slate-100">
+                  Учётные записи
+                </Link>
+              ) : null}
+              <Link href="/account" className="rounded px-2 py-2.5 active:bg-slate-100">
+                {user.name} · {user.roleName}
+              </Link>
+              <form action={logout}>
+                <button type="submit" className="w-full rounded px-2 py-2.5 text-left underline active:bg-slate-100">
+                  Выйти
+                </button>
+              </form>
+            </div>
+          </MobileMenu>
         </div>
       </header>
-      <main className="mx-auto max-w-[1600px] p-5">{children}</main>
+      <main className="mx-auto max-w-[1600px] px-3 py-4 md:p-5">{children}</main>
     </div>
   );
 }

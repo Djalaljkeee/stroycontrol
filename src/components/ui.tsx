@@ -58,12 +58,13 @@ export function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
+    <section className="min-w-0 rounded-lg border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-200 px-4 py-2.5">
         <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
         {hint ? <p className="mt-0.5 text-xs text-slate-500">{hint}</p> : null}
       </header>
-      <div className="p-4">{children}</div>
+      {/* Широкие таблицы на телефоне прокручиваются внутри карточки, а не всей страницей. */}
+      <div className="overflow-x-auto p-3 md:p-4">{children}</div>
     </section>
   );
 }
@@ -86,9 +87,9 @@ export function Stat({
     over: 'text-red-700',
   };
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm md:p-4">
       <div className="text-xs text-slate-500">{label}</div>
-      <div className={`mt-1 text-2xl font-semibold tabular-nums ${tones[tone]}`}>{value}</div>
+      <div className={`mt-1 text-xl font-semibold tabular-nums md:text-2xl ${tones[tone]}`}>{value}</div>
       {sub ? <div className="mt-1 text-xs text-slate-500">{sub}</div> : null}
     </div>
   );

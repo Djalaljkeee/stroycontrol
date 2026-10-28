@@ -74,7 +74,7 @@ export default async function ControlPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         <Stat
           label="Защищено по проекту"
           value={percent(projectTotal > 0 ? closedTotal / projectTotal : null)}
