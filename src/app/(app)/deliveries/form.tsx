@@ -8,16 +8,12 @@ import type { TargetGroup } from '@/lib/targets';
 export function DeliveryForm({
   materials,
   targets,
-  targetRequired,
 }: {
   materials: { id: number; name: string; kind: string; unit: string }[];
   targets: TargetGroup[];
-  /** Снабжение может оставить бетон без разнесения — его разнесёт прораб. */
-  targetRequired: boolean;
 }) {
   const [materialId, setMaterialId] = useState<string>('');
   const material = materials.find((m) => String(m.id) === materialId);
-  const isConcrete = material?.kind === 'concrete';
 
   return (
     <ActionForm action={createDelivery} submitLabel="Записать приход">
@@ -44,21 +40,19 @@ export function DeliveryForm({
         <TextInput name="quantity" inputMode="decimal" placeholder="25,41" />
       </Field>
       <Field
-        label="Куда"
-        hint={
-          isConcrete
-            ? targetRequired
-              ? 'Обязательно для бетона: он уходит сразу в дело. Если на площадке не разделили — весь этаж'
-              : 'Если не знаете — оставьте пустым, прораб разнесёт'
-            : 'Для арматуры — под конкретный блок этажа или на склад'
-        }
+        label="Конструктив"
+        hint="Приход сразу списывается сюда. Если на площадке не разделили — весь этаж"
       >
         <TargetSelect
           name="target"
           defaultValue=""
+          required
           groups={targets}
-          placeholder={isConcrete ? (targetRequired ? 'Выберите этаж или конструктив' : 'не разнесено') : 'на склад'}
+          placeholder="Выберите конструктив или этаж"
         />
+      </Field>
+      <Field label="Оси / примечание" hint="Где именно в конструктиве: оси, захватка, участок">
+        <TextInput name="note" placeholder="оси 1–4 / А–В" />
       </Field>
       <Field label="Номер ТТН">
         <TextInput name="ttnNumber" placeholder="ТТН-10482" />

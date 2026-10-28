@@ -4,9 +4,8 @@
 export const SECTIONS = [
   { key: 'control', label: 'Контроль', href: '/control', hint: 'выполнение и защита объёмов, сводка по смете' },
   { key: 'dashboard', label: 'Прогноз', href: '/dashboard', hint: 'перерасход и прогноз по конструктивам' },
-  { key: 'deliveries', label: 'Приходы', href: '/deliveries', hint: 'реестр поставок' },
+  { key: 'deliveries', label: 'Приход и списание', href: '/deliveries', hint: 'поставки сразу на конструктив' },
   { key: 'pours', label: 'Выполнение', href: '/pours', hint: 'заливки и выполнение конструктивов' },
-  { key: 'issues', label: 'Списания', href: '/issues', hint: 'акты монтажа арматуры' },
   { key: 'tiers', label: 'Этажи', href: '/tiers', hint: 'разрез как лист «приходы»' },
   { key: 'closings', label: 'Процентовка', href: '/closings', hint: 'закрытие по КС-6а' },
   { key: 'balance', label: 'Остатки', href: '/balance', hint: 'склад и остаточная таблица' },
@@ -19,10 +18,9 @@ export const SECTIONS = [
 export type Section = (typeof SECTIONS)[number]['key'];
 
 export const WRITE_SECTIONS = [
-  { key: 'deliveries', label: 'Ввод прихода', needs: 'deliveries' },
+  { key: 'deliveries', label: 'Ввод прихода и списания', needs: 'deliveries' },
   { key: 'allocate', label: 'Разнесение прихода по конструкциям', needs: 'deliveries' },
   { key: 'pours', label: 'Выполнение и заливки', needs: 'pours' },
-  { key: 'issues', label: 'Акты монтажа (списание арматуры)', needs: 'issues' },
   { key: 'closings', label: 'Процентовка', needs: 'closings' },
   { key: 'baselines', label: 'Базы сравнения', needs: 'structures' },
 ] as const;

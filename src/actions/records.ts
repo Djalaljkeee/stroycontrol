@@ -4,8 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { auditLog, closings, deliveries, issues, materials, pours, structures } from '@/db/schema';
-import { canWrite, requireWrite } from '@/lib/auth';
+import { auditLog, closings, deliveries, materials, pours, structures } from '@/db/schema';
+import { requireWrite } from '@/lib/auth';
 import { parseTarget } from '@/lib/targets';
 import { buildProtection } from '@/lib/protection';
 
@@ -30,7 +30,7 @@ async function tierOfStructure(structureId: number): Promise<number | null> {
 }
 
 function revalidateAll() {
-  for (const path of ['/control', '/tiers', '/deliveries', '/issues', '/closings', '/balance', '/dashboard', '/structures']) {
+  for (const path of ['/control', '/tiers', '/deliveries', '/closings', '/balance', '/dashboard', '/structures']) {
     revalidatePath(path);
   }
 }
@@ -182,9 +182,11 @@ const deliverySchema = z.object({
   date: isoDate,
   materialId: z.coerce.number().int().positive('Выберите материал'),
   quantity: decimal,
-  target: z.string().optional(),
+  target: z.string().min(1, 'Выберите конструктив'),
   ttnNumber: z.string().trim().optional(),
   supplier: z.string().trim().optional(),
+  /** Оси, захватка словами — всё, что не помещается в справочник конструктивов. */
+  note: z.string().trim().optional(),
 });
 
 export async function createDelivery(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -203,17 +205,10 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
   const [material] = await db.select().from(materials).where(eq(materials.id, v.materialId));
   if (!material) return fail('Материал не найден');
 
-  // Бетон не складируется: поставка без разнесения сразу становится
-  // неподтверждённым расходом, поэтому куда он ушёл, спрашиваем при вводе.
-  // Снабжение может принять ТТН без разнесения — поставка встанет прорабу в очередь
-  // «Бетон без разнесения». Тот, кто разносит сам, обязан указать куда сразу.
-  if (
-    material.kind === 'concrete' &&
-    target.structureId == null &&
-    target.tierId == null &&
-    canWrite(user, 'allocate')
-  ) {
-    return fail('Для бетона укажите конструктив или этаж: без этого поставка попадёт в неподтверждённый расход');
+  // Приход вводится сразу на конструктив — это и есть списание, отдельного акта
+  // нет. Этаж целиком допустим, когда на площадке не разделили по конструктивам.
+  if (target.structureId == null && target.tierId == null) {
+    return fail('Укажите конструктив или этаж: приход сразу списывается на него');
   }
   if (material.kind === 'rebar' && material.isAggregate) {
     return fail('Приход арматуры вводится по конкретному диаметру, а не общей позицией');
@@ -230,15 +225,15 @@ export async function createDelivery(_prev: ActionState, formData: FormData): Pr
       tierId,
       ttnNumber: v.ttnNumber || null,
       supplier: v.supplier || null,
+      note: v.note || null,
       createdBy: user.id,
     })
     .returning({ id: deliveries.id });
 
   await audit(user.id, 'create', 'delivery', row.id, v);
   revalidateAll();
-  const where =
-    target.structureId != null ? 'на конструктив' : target.tierId != null ? 'на этаж' : 'на склад';
-  return { ok: `Приход ${v.quantity} ${material.unit} записан ${where}` };
+  const where = target.structureId != null ? 'на конструктив' : 'на этаж';
+  return { ok: `Приход ${v.quantity} ${material.unit} записан и списан ${where}` };
 }
 
 const allocateSchema = z.object({
@@ -265,58 +260,6 @@ export async function allocateDelivery(formData: FormData): Promise<void> {
 
   await audit(user.id, 'allocate', 'delivery', v.deliveryId, { ...v, ...target, tierId });
   revalidateAll();
-}
-
-// ── Списания ────────────────────────────────────────────────────────────────
-
-const issueSchema = z.object({
-  date: isoDate,
-  materialId: z.coerce.number().int().positive('Выберите материал'),
-  quantity: decimal,
-  target: z.string().min(1, 'Выберите конструктив'),
-  pourId: z
-    .string()
-    .optional()
-    .transform((v) => (v && v !== '' ? Number(v) : null)),
-  document: z.string().trim().optional(),
-});
-
-export async function createIssue(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  let user;
-  try {
-    user = await requireWrite('issues');
-  } catch (e) {
-    return fail((e as Error).message);
-  }
-
-  const parsed = issueSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return fail(parsed.error.issues[0]!.message);
-  const v = parsed.data;
-
-  const [material] = await db.select().from(materials).where(eq(materials.id, v.materialId));
-  if (!material) return fail('Материал не найден');
-  if (material.kind !== 'rebar') {
-    return fail('Актом монтажа списывается арматура; бетон списывается привязкой ТТН к захватке');
-  }
-  const { structureId } = parseTarget(v.target);
-  if (structureId == null) return fail('Списание делается на конструктив, а не на этаж целиком');
-
-  const [row] = await db
-    .insert(issues)
-    .values({
-      date: v.date,
-      materialId: v.materialId,
-      quantity: String(v.quantity),
-      structureId,
-      pourId: v.pourId,
-      document: v.document || null,
-      createdBy: user.id,
-    })
-    .returning({ id: issues.id });
-
-  await audit(user.id, 'create', 'issue', row.id, v);
-  revalidateAll();
-  return { ok: `Списано ${v.quantity} ${material.unit}` };
 }
 
 // ── Процентовка ─────────────────────────────────────────────────────────────
